@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { WebhookType } from '../../../helius/config';
-import { HeliusWebhookData, TokenTransfer, WebhookData } from '../../../types/helius';
+import { WebhookType } from '../../../lib/helius/config';
+import { HeliusWebhookData, TokenTransfer, WebhookData } from '../../../lib/helius/types';
 import { USDC_MINT } from '../../../config/tokens';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

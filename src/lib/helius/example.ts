@@ -1,6 +1,6 @@
 import { HeliusClient } from './client';
 import { getHeliusConfig } from './config';
-import { logger } from '../lib/logger';
+import { logger } from '../logger';
 
 async function example() {
   // Initialize Helius client

@@ -1,96 +1,82 @@
 # Project File Map
 
-## Current File Structure Analysis
+## Completed File Migrations
 
-### Completed File Migrations
-
-1. **DashboardLayout.tsx**
-   - Old Location: /DashboardLayout.tsx
-   - New Location: src/app/(dashboard)/layout.tsx
+### Helius Integration Migration
+1. **Helius Client**
+   - Old Location: `src/helius/client.ts`
+   - New Location: `src/lib/helius/client.ts`
    - Status: ✅ Migrated
-   - Key Dependencies:
-     - Header.tsx
-     - Sidebar.tsx
-     - provider.tsx
-     - UserRoles.ts
+   - Key Responsibilities:
+     - Helius API interactions
+     - Transaction enrichment
+     - Webhook management
 
-2. **Header.tsx**
-   - Old Location: /Header.tsx
-   - New Location: src/components/Header.tsx
+2. **Helius Configuration**
+   - Old Location: `src/helius/config.ts`
+   - New Location: `src/lib/helius/config.ts`
    - Status: ✅ Migrated
-   - Key Dependencies:
-     - UserRoles.ts
-     - roles.ts
-     - provider.tsx
+   - Key Responsibilities:
+     - Environment configuration
+     - API key management
 
-3. **LoginScreen.tsx**
-   - Old Location: /LoginScreen.tsx
-   - New Location: src/app/(auth)/login/page.tsx
+3. **Helius Types**
+   - Old Location: `src/helius/types.ts`
+   - New Location: `src/lib/helius/types.ts`
    - Status: ✅ Migrated
-   - Key Dependencies:
-     - provider.tsx
-     - roles.ts
+   - Key Responsibilities:
+     - Type definitions for Helius interactions
+     - Transaction and transfer interfaces
 
-4. **Sidebar.tsx**
-   - Old Location: /Sidebar.tsx
-   - New Location: src/components/Sidebar.tsx
+### Webhook Migration
+1. **Helius Webhook Handler**
+   - Old Location: `src/pages/api/webhook/helius.ts`
+   - New Location: `src/app/api/webhooks/helius.ts`
    - Status: ✅ Migrated
-   - Key Dependencies:
-     - UserRoles.ts
-     - roles.ts
-     - provider.tsx
-
-5. **UserRoles.ts**
-   - Old Location: /UserRoles.ts
-   - New Location: src/types/UserRoles.ts
-   - Status: ✅ Migrated
-   - Key Dependencies:
-     - roles.ts
-
-6. **provider.tsx**
-   - Old Location: /provider.tsx
-   - New Location: src/providers/provider.tsx
-   - Status: ✅ Migrated
-   - Key Dependencies:
-     - UserRoles.ts
-     - roles.ts
-
-7. **roles.ts**
-   - Old Location: /roles.ts
-   - New Location: src/types/roles.ts
-   - Status: ✅ Migrated
-   - No direct dependencies
-
-8. **page.tsx**
-   - Old Location: /page.tsx
-   - New Location: src/app/page.tsx
-   - Status: ✅ Migrated
-   - Key Dependencies:
-     - provider.tsx
-     - UserRoles.ts
+   - Key Responsibilities:
+     - Webhook request handling
+     - Transaction processing
+     - USDC transfer validation
 
 ## Current Project Structure
 ```
 src/
 ├── app/
+│   ├── api/
+│   │   └── webhooks/
+│   │       └── helius.ts     # Webhook handler
 │   ├── (dashboard)/
 │   │   └── layout.tsx        # DashboardLayout
 │   ├── (auth)/
 │   │   └── login/
 │   │       └── page.tsx      # LoginScreen
-│   ├── api/                  # API routes
 │   └── page.tsx              # Root page
 ├── components/
 │   ├── Header.tsx
 │   ├── Sidebar.tsx
 │   ├── PrivyClientWrapper.tsx
-│   └── error/               # Error handling components
+│   └── error/                # Error handling components
+├── config/
+│   ├── helio.config.ts
+│   ├── solana-pay.config.ts
+│   └── tokens.ts
+├── lib/
+│   ├── helius/
+│   │   ├── client.ts
+│   │   ├── config.ts
+│   │   ├── example.ts
+│   │   └── types.ts
+│   ├── blockchain/
+│   │   ├── cache.ts
+│   │   ├── rateLimiter.ts
+│   │   └── retry.ts
+│   └── logger.ts
 ├── types/
 │   ├── UserRoles.ts
 │   ├── roles.ts
 │   ├── privy.ts
-│   ├── helius.ts           # Helius API types
-│   └── network.ts          # Network configuration types
+│   ├── helius.ts             # Helius API types
+│   └── network.ts            # Network configuration types
 ├── providers/
 │   └── provider.tsx
 └── __tests__/
@@ -98,20 +84,33 @@ src/
     │   └── AuthFlow.test.tsx
     ├── utils/
     │   └── test-utils.tsx
-    ├── api.test.ts         # API endpoint tests
-    ├── deployment.test.ts  # Deployment validation
-    ├── helio.test.ts      # Helio integration tests
-    ├── helius.test.ts     # Helius integration tests
-    └── setup.ts           # Test setup configuration
+    ├── api.test.ts           # API endpoint tests
+    ├── deployment.test.ts    # Deployment validation
+    ├── helio.test.ts         # Helio integration tests
+    ├── helius.test.ts        # Helius integration tests
+    └── setup.ts              # Test setup configuration
 ```
+
+## Pending Migrations
+
+### Root App Directory Migration
+Pending migrations from `/app`:
+1. Configuration
+   - `/app/config/sdk.ts` → `src/config/`
+2. SDK Integration
+   - `/app/lib/sdk.ts` → `src/lib/`
+3. Utility Functions
+   - `/app/utils/` → `src/utils/`
+4. Test Files
+   - `/app/test/` → `src/app/__tests__/`
+5. Layout and Page Files
+   - Rename `page.js` to `page.tsx`
+   - Verify routing configurations
 
 ## Next Recovery Phases
 
 ### Immediate Focus
 1. Authentication Flow Validation
-   - [x] Comprehensive test suite
-   - [x] Wallet connection testing
-   - [x] Email login process validation
    - [ ] Role-based access control testing
    - [ ] Advanced error scenario testing
 
@@ -127,15 +126,8 @@ src/
    - [ ] Performance benchmarking
    - [ ] Continuous integration setup
 
-### Potential Risks and Mitigation
-- [x] Import path resolution
-- [x] Authentication flow validation
-- [ ] Type system comprehensive testing
-- [ ] Environment configuration validation
-- [ ] API integration robustness
-
-## Recommended Validation Strategy
-1. Automated Test Suite Execution
+## Validation Strategy
+1. Automated Test Suite
    - Comprehensive unit tests
    - Integration testing
    - Error scenario validation
@@ -144,12 +136,9 @@ src/
    - Feature flag implementation
    - Gradual deployment
 4. Continuous Monitoring
-   - Performance tracking
-   - Error logging
-   - Security assessment
 
 ## Critical Validation Checklist
-- [x] Authentication flow testing
+- [ ] Authentication flow testing
 - [ ] Role-based access control
 - [ ] Comprehensive error handling
 - [ ] Smooth page navigation
@@ -158,18 +147,4 @@ src/
 - [ ] Performance benchmarking
 - [ ] Security vulnerability assessment
 
-## Test Infrastructure Highlights
-- Jest testing framework
-- React Testing Library
-- Comprehensive mocking strategies
-- Error boundary integration
-- Environment-specific configurations
-
-## Ongoing Improvement Areas
-1. Expand test coverage
-2. Implement advanced error scenarios
-3. Enhance performance testing
-4. Continuous security auditing
-5. Refine authentication mechanisms
-
-Last Updated: 2024-02-15
+Last Updated: 2024-02-16
