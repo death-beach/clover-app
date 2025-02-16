@@ -1,94 +1,33 @@
-export enum UserRole {
-  ADMIN = 'ADMIN',
-  MANAGER = 'MANAGER',
-  CASHIER = 'CASHIER',
-  TRAINEE = 'TRAINEE',
-  VIEWER = 'VIEWER'
+export interface RolePermissions {
+  canManageUsers: boolean;
+  canModifySettings: boolean;
+  canViewDashboard: boolean;
+  canProcessPayments: boolean;
 }
 
-export interface RolePermissions {
-  canViewTransactions: boolean;
-  canProcessPayments: boolean;
-  canManageUsers: boolean;
-  canAccessSettings: boolean;
-  canViewDashboard: boolean;
-  canModifySettings: boolean;
-  canViewReports: boolean;
-  canExportData: boolean;
-}
+export type Role = 'admin' | 'merchant' | 'customer';
 
 export type RolePermissionsMap = {
-  [key in UserRole]: RolePermissions;
+  [key in Role]: RolePermissions;
 };
 
 export const rolePermissions: RolePermissionsMap = {
-  [UserRole.ADMIN]: {
-    canViewTransactions: true,
-    canProcessPayments: true,
+  admin: {
     canManageUsers: true,
-    canAccessSettings: true,
-    canViewDashboard: true,
     canModifySettings: true,
-    canViewReports: true,
-    canExportData: true
-  },
-  [UserRole.MANAGER]: {
-    canViewTransactions: true,
-    canProcessPayments: true,
-    canManageUsers: true,
-    canAccessSettings: true,
     canViewDashboard: true,
-    canModifySettings: false,
-    canViewReports: true,
-    canExportData: true
+    canProcessPayments: true
   },
-  [UserRole.CASHIER]: {
-    canViewTransactions: true,
-    canProcessPayments: true,
+  merchant: {
     canManageUsers: false,
-    canAccessSettings: false,
+    canModifySettings: true,
     canViewDashboard: true,
-    canModifySettings: false,
-    canViewReports: false,
-    canExportData: false
+    canProcessPayments: true
   },
-  [UserRole.TRAINEE]: {
-    canViewTransactions: true,
-    canProcessPayments: false,
+  customer: {
     canManageUsers: false,
-    canAccessSettings: false,
-    canViewDashboard: true,
     canModifySettings: false,
-    canViewReports: false,
-    canExportData: false
-  },
-  [UserRole.VIEWER]: {
-    canViewTransactions: true,
-    canProcessPayments: false,
-    canManageUsers: false,
-    canAccessSettings: false,
-    canViewDashboard: true,
-    canModifySettings: false,
-    canViewReports: false,
-    canExportData: false
+    canViewDashboard: false,
+    canProcessPayments: true
   }
-};
-
-export function hasRequiredRole(userRole: UserRole, requiredRole: UserRole): boolean {
-  const roleHierarchy = [
-    UserRole.VIEWER,
-    UserRole.TRAINEE,
-    UserRole.CASHIER,
-    UserRole.MANAGER,
-    UserRole.ADMIN
-  ];
-  
-  const userRoleIndex = roleHierarchy.indexOf(userRole);
-  const requiredRoleIndex = roleHierarchy.indexOf(requiredRole);
-  
-  return userRoleIndex >= requiredRoleIndex;
-}
-
-export function getPermissionsForRole(role: UserRole): RolePermissions {
-  return rolePermissions[role];
 }
