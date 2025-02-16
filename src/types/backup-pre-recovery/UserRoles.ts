@@ -2,20 +2,20 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { usePrivy } from '@privy-io/react-auth'
-import { UserRole } from './roles'
+import { type Role } from './roles'
 import { type PrivyUser, isPrivyUser } from './privy'
 
 const API_ENDPOINT = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes in milliseconds
 
 interface CachedRole {
-  role: UserRole;
+  role: Role;
   timestamp: number;
 }
 
 // Type guard for Role
-function isUserRole(role: string): role is UserRole {
-  return Object.values(UserRole).includes(role as UserRole)
+function isUserRole(role: string): role is Role {
+  return ['admin', 'merchant', 'customer'].includes(role as Role)
 }
 
 // In-memory cache for roles
@@ -23,7 +23,7 @@ const roleCache = new Map<string, CachedRole>();
 
 export interface User {
   id: string;
-  role: UserRole;
+  role: Role;
   email: string;
   name: string;
   createdAt: Date;
@@ -32,14 +32,14 @@ export interface User {
 
 export interface UserSession {
   user: User | null;
-  role: UserRole | null;
+  role: Role | null;
   isLoading: boolean;
   error?: Error;
 }
 
 export function useUserRole(): UserSession {
   const { user: privyUser, ready, authenticated, getAccessToken } = usePrivy()
-  const [role, setRole] = useState<UserRole | null>(null)
+  const [role, setRole] = useState<Role | null>(null)
   const [isLoadingRole, setIsLoadingRole] = useState(false)
   const [error, setError] = useState<Error | undefined>()
 
@@ -49,7 +49,7 @@ export function useUserRole(): UserSession {
   }, [])
 
   // Get role from cache
-  const getCachedRole = useCallback((userId: string): UserRole | null => {
+  const getCachedRole = useCallback((userId: string): Role | null => {
     const cachedData = roleCache.get(userId)
     if (cachedData && isCacheValid(cachedData)) {
       return cachedData.role
@@ -58,7 +58,7 @@ export function useUserRole(): UserSession {
   }, [isCacheValid])
 
   // Set role in cache
-  const setCachedRole = useCallback((userId: string, role: UserRole) => {
+  const setCachedRole = useCallback((userId: string, role: Role) => {
     roleCache.set(userId, {
       role,
       timestamp: Date.now()
@@ -101,7 +101,7 @@ export function useUserRole(): UserSession {
 
         const data = await response.json()
         
-        let userRole: UserRole = UserRole.VIEWER // Default role
+        let userRole: Role = 'customer' // Default role
         
         if (data.role && isUserRole(data.role)) {
           userRole = data.role
@@ -123,7 +123,7 @@ export function useUserRole(): UserSession {
         setError(new Error(errorMessage))
         
         // Set default role on error
-        setRole(UserRole.VIEWER)
+        setRole('customer')
       } finally {
         if (isMounted) {
           setIsLoadingRole(false)
@@ -141,7 +141,7 @@ export function useUserRole(): UserSession {
   // Ensure we have a valid Privy user before creating our user object
   const user = privyUser && isPrivyUser(privyUser) ? {
     id: privyUser.id,
-    role: role || UserRole.VIEWER,
+    role: role || 'customer',
     email: privyUser.email?.address || '',
     name: privyUser.email?.address?.split('@')[0] || `User-${privyUser.id.slice(0, 8)}`,
     createdAt: new Date(privyUser?.createdAt || Date.now()),
