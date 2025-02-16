@@ -1,19 +1,23 @@
 import '@testing-library/jest-dom'
+import { cleanup } from '@testing-library/react'
 
-// Mock fetch for all tests
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    json: () => Promise.resolve({}),
-    ok: true,
-    status: 200,
-  })
-) as jest.Mock
+// Mock next/navigation
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+    forward: jest.fn(),
+  }),
+  usePathname: () => '/',
+  useSearchParams: () => new URLSearchParams(),
+}))
 
-beforeEach(() => {
-  jest.resetModules()
-  jest.clearAllMocks()
-})
+// Mock environment variables
+process.env.NEXT_PUBLIC_PRIVY_APP_ID = 'test-privy-app-id'
 
+// Cleanup after each test
 afterEach(() => {
+  cleanup()
   jest.clearAllMocks()
 })

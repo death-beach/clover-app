@@ -1,1 +1,0 @@
-This file is a symlink to docs/project-fixes.md. Please refer to the documentation in the docs folder for the most up-to-date project fixes strategy.
