@@ -1,8 +1,8 @@
 import { Connection, PublicKey, ParsedTransactionWithMeta } from '@solana/web3.js';
-import { withRetry } from './retry';
-import { BlockchainCache } from './cache';
-import { RateLimiter } from './rateLimiter';
-import { logger } from '../logger';
+import { withRetry } from '@/lib/blockchain/retry';
+import { BlockchainCache } from '@/lib/blockchain/cache';
+import { RateLimiter } from '@/lib/blockchain/rateLimiter';
+import { logger } from '@/lib/logger';
 
 // Initialize cache and rate limiter
 const cache = new BlockchainCache();

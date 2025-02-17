@@ -1,7 +1,7 @@
 'use client'
 
-import { type UserRole, rolePermissions } from '../types/roles'
-import { useNavigation } from '../hooks/useNavigation'
+import { type UserRole, rolePermissions } from '@/types/roles'
+import { useNavigation } from '@/hooks/useNavigation'
 import Link from 'next/link'
 
 interface SidebarProps {

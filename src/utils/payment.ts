@@ -1,4 +1,4 @@
-import { helioApi } from '../../config/helio-sdk';
+import { helioApi } from '@/config/helio-sdk';
 
 export interface HelioPaymentIntent {
   id: string;

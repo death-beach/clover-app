@@ -1,8 +1,8 @@
 'use client'
 
-import { type UserRole, rolePermissions } from '../types/roles'
+import { type UserRole, rolePermissions } from '@/types/roles'
 import { useWallets } from '@privy-io/react-auth'
-import { type PrivyUser } from '../types/privy'
+import { type PrivyUser } from '@/types/privy'
 
 interface HeaderProps {
   onLogout: () => void;

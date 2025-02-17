@@ -2,8 +2,8 @@
 
 import { PrivyProvider, usePrivy } from '@privy-io/react-auth'
 import { createContext, useContext, type PropsWithChildren, useEffect, useState } from 'react'
-import { type UserRole } from '../types/roles'
-import { useUserRole } from '../types/UserRoles'
+import { type UserRole } from '@/types/roles'
+import { useUserRole } from '@/types/UserRoles'
 
 const PRIVY_APP_ID = 'cm5yjbh8z01lv6heoze3v3ep5'
 const CLIENT_ID = 'client-WY5fRbUUsnYnSBnU7hp47apYGAdUgABi38uhK4PxBYLpx'

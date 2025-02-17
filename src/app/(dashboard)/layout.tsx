@@ -1,12 +1,12 @@
 'use client'
 
 import { usePrivy } from '@privy-io/react-auth'
-import { type PrivyInterface } from '../../../types/privy'
-import { Sidebar } from '../../../components/Sidebar'
-import { Header } from '../../../components/Header'
-import { type UserRole, type UserSession } from '../../../types/roles'
-import { Suspense, ReactNode } from 'react'
-import { useUserRole } from '../../../types/UserRoles'
+import { type PrivyUser } from '@/types/privy'
+import { Sidebar } from '@/components/Sidebar'
+import { Header } from '@/components/Header'
+import { type UserRole } from '@/types/roles'
+import { Suspense, type ReactNode } from 'react'
+import { useUserRole } from '@/types/UserRoles'
 
 interface DashboardLayoutProps {
   children?: ReactNode;

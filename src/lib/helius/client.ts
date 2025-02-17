@@ -1,9 +1,9 @@
 import { Connection } from '@solana/web3.js';
-import { withRetry } from '../blockchain/retry';
-import { BlockchainCache } from '../blockchain/cache';
-import { RateLimiter } from '../blockchain/rateLimiter';
-import { logger } from '../logger';
-import { HeliusConfig } from './config';
+import { withRetry } from '@/lib/blockchain/retry';
+import { BlockchainCache } from '@/lib/blockchain/cache';
+import { RateLimiter } from '@/lib/blockchain/rateLimiter';
+import { logger } from '@/lib/logger';
+import { HeliusConfig } from '@/lib/helius/config';
 
 export class HeliusClient {
   private connection: Connection;

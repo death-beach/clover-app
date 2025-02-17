@@ -1,4 +1,4 @@
-import { PaymentError, NetworkError, ValidationError, AuthenticationError } from './types';
+import { PaymentError, NetworkError, ValidationError, AuthenticationError } from '@/utils/errors/types';
 
 interface ErrorResponse {
   message: string;

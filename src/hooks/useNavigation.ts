@@ -1,11 +1,10 @@
 'use client'
 
 import { useMemo } from 'react'
-import { type UserRole } from '@/types/roles'
-import { rolePermissions } from '@/roles'
+import { type UserRole, rolePermissions } from '@/types/roles'
 import { usePathname } from 'next/navigation'
 
-export interface MenuItem {
+export type MenuItem = {
   name: string
   href: string
   icon?: string
