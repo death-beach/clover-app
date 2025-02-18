@@ -1,4 +1,1 @@
-export enum Network {
-  MAINNET = 'mainnet-beta',
-  DEVNET = 'devnet'
-}
+// This file is deprecated. Please use types from the common directory.

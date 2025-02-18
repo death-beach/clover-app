@@ -1,7 +1,8 @@
 import { render as rtlRender } from '@testing-library/react'
-import { UserRole, rolePermissions } from '../../types/roles'
-import { AuthProvider } from '../../providers/provider'
-import { ErrorBoundary } from '../../components/error/ErrorBoundary'
+import type { UserRole } from '@/types/roles'
+import { rolePermissions } from '@/types/roles'
+import { AuthProvider } from '@/providers/provider'
+import { ErrorBoundary } from '@/components/error/ErrorBoundary'
 import { ErrorFallback } from './test-utils'
 
 // Mock user data interface

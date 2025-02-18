@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, ErrorFallback } from '@/__tests__/utils'
 import { signIn } from 'next-auth/react'
 import axios from 'axios'
 import LoginPage from '@/app/(auth)/login/page'
@@ -27,14 +27,6 @@ const mockSolflareWallet = {
   disconnect: jest.fn(),
   publicKey: { toString: () => 'mock-solflare-public-key' },
 }
-
-// Mock error fallback component
-const ErrorFallback = ({ error }: { error: Error }) => (
-  <div role="alert">
-    <p>Something went wrong:</p>
-    <pre>{error.message}</pre>
-  </div>
-)
 
 describe('Authentication Flow', () => {
   beforeEach(() => {

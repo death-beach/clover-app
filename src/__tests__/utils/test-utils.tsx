@@ -1,8 +1,9 @@
 import { render as rtlRender } from '@testing-library/react'
-import { ErrorBoundary } from '../../components/error/ErrorBoundary'
+import { ErrorBoundary } from '@/components/error/ErrorBoundary'
+import type { ErrorFallbackProps } from '@/components/error/ErrorBoundary'
 
 // Mock error fallback component
-export const ErrorFallback = ({ error }: { error: Error }) => (
+export const ErrorFallback = ({ error }: ErrorFallbackProps) => (
   <div role="alert">
     <p>Something went wrong:</p>
     <pre>{error.message}</pre>
