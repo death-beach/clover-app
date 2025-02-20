@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { ROLES, type Role } from '@/config/roles';
+import { CLOVER_ROLES, type CloverRole, CLOVER_ROLE_PERMISSIONS } from '@/config/clover-roles';
 
 interface User {
   id: string;
   name: string;
   email: string;
-  role: Role;
+  role: CloverRole;
   walletAddress: string;
 }
 
@@ -17,7 +17,7 @@ const mockUsers: User[] = [
     id: '1',
     name: 'John Doe',
     email: 'john@example.com',
-    role: 'CASHIER',
+    role: CLOVER_ROLES.EMPLOYEE,
     walletAddress: '8xyt...3kj9',
   },
 ];
@@ -25,7 +25,7 @@ const mockUsers: User[] = [
 export default function ManageRolesPage() {
   const [users, setUsers] = useState<User[]>(mockUsers);
 
-  const handleRoleChange = (userId: string, newRole: Role) => {
+  const handleRoleChange = (userId: string, newRole: CloverRole) => {
     setUsers(users.map(user => 
       user.id === userId ? { ...user, role: newRole } : user
     ));
@@ -78,10 +78,10 @@ export default function ManageRolesPage() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <select
                       value={user.role}
-                      onChange={(e) => handleRoleChange(user.id, e.target.value as Role)}
+                      onChange={(e) => handleRoleChange(user.id, e.target.value as CloverRole)}
                       className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     >
-                      {Object.keys(ROLES).map((role) => (
+                      {Object.keys(CLOVER_ROLES).map((role) => (
                         <option key={role} value={role}>
                           {role}
                         </option>
