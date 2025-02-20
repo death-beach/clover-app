@@ -1,111 +1,107 @@
-# Next.js Solana Dashboard with Helius Integration
+# Clover USDC Payment Gateway
 
-A Next.js 13+ dashboard application with Helius integration for Solana transaction monitoring and role-based access control.
+A streamlined payment gateway enabling Clover merchants to accept USDC payments on Solana.
 
-## Features
+## Core Features
 
-### Helius Integration
-- **Transaction Monitoring**
-  - Real-time transaction tracking
-  - Enhanced transaction data
-  - Network configuration support
-  - RPC endpoint access
-  - Webhook integration capability
+- USDC payments via Solana Pay
+- Clover POS integration
+- Automatic fiat off-ramp via Helio
+- Merchant dashboard
+- Transaction management
 
-### Role-Based Access Control
-- Multiple user roles with specific permissions
-- Dynamic permission system
-- Protected routes
-- Role-specific UI elements
+## Tech Stack
 
-### Dashboard Interface
-- Responsive layout
-- Dynamic navigation
-- Role-based components
-- Protected routes
+- Frontend: Next.js + TypeScript
+- Backend: Next.js API Routes
+- Database: PostgreSQL (via Helio)
+- Blockchain: Solana + Helius
+- Auth: Privy + Clover OAuth
+- Off-ramp: Helio + Bridge.xyz
 
-### Blockchain Infrastructure
-- **Helius Integration**
-  - Real-time transaction tracking
-  - Enhanced transaction data
-  - Network configuration (mainnet/devnet)
-  - RPC endpoint access
-  - Webhook support
+## Project Structure
 
-## Installation
-
-### Prerequisites
-- Node.js 16+
-- Next.js 13+
-- Helius API key
-
-### Quick Start
-1. Clone the repository
-```bash
-git clone [repository-url]
-cd [project-directory]
+```
+src/
+  ├── app/
+  │   ├── (auth)/           # Authentication routes
+  │   │   ├── login/        # Merchant login
+  │   │   └── callback/     # OAuth callback
+  │   ├── (dashboard)/      # Protected merchant dashboard
+  │   │   ├── layout.tsx    # Dashboard layout with nav
+  │   │   ├── page.tsx      # Overview/summary
+  │   │   ├── transactions/ # Transaction history
+  │   │   ├── settings/     # Merchant settings
+  │   │   └── users/        # User management
+  │   ├── api/              # API routes
+  │   │   ├── auth/         # Auth endpoints
+  │   │   ├── webhooks/     # Service webhooks
+  │   │   ├── payments/     # Payment processing
+  │   │   └── merchants/    # Merchant management
+  │   └── pay/              # Payment flow pages
+  ├── components/           # Reusable UI components
+  ├── lib/                  # Core business logic
+  │   ├── clover/          # Clover integration
+  │   ├── helio/           # Helio integration
+  │   ├── solana/          # Solana/Helius integration
+  │   └── db/              # Database operations
+  ├── types/               # TypeScript definitions
+  └── utils/               # Helper functions
 ```
 
-2. Install dependencies
-```bash
-npm install
-```
+## Getting Started
 
-3. Configure environment variables
-```bash
-# Create .env file with:
-NEXT_PUBLIC_HELIUS_API_KEY=your_helius_api_key
-SOLANA_NETWORK=mainnet/devnet
-```
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-4. Start the development server
-```bash
-npm run dev
-```
+2. Set up environment variables:
+   ```
+   # Auth
+   PRIVY_APP_ID=
+   CLOVER_CLIENT_ID=
+   CLOVER_CLIENT_SECRET=
 
-## Usage
+   # Solana
+   HELIUS_API_KEY=
+   
+   # Helio
+   HELIO_API_KEY=
+   HELIO_WEBHOOK_SECRET=
+   
+   # Database
+   DATABASE_URL=
+   ```
 
-### Helius Client Integration
-```typescript
-// Initialize Helius client
-const heliusClient = new HeliusClient({
-    apiKey: process.env.NEXT_PUBLIC_HELIUS_API_KEY,
-    rpcEndpoint: `https://${network}.helius-rpc.com/${apiKey}`
-});
+3. Run development server:
+   ```bash
+   npm run dev
+   ```
 
-// Get transaction details
-const getTransactionDetails = async (signature: string) => {
-    const enrichedTx = await heliusClient.getEnrichedTransaction(signature);
-    return enrichedTx;
-};
-```
+## Core Workflows
 
-### Role-Based Access Implementation
-```typescript
-// Protected component usage
-<ProtectedComponent requiredRole={UserRole.ADMIN}>
-    <AdminDashboard />
-</ProtectedComponent>
-```
+### Payment Flow
+1. Create Clover order
+2. Generate Solana Pay QR
+3. Customer pays USDC
+4. Helius confirms transaction
+5. Update Clover order
+6. Auto off-ramp via Helio
 
-## Documentation
-For detailed documentation, please see the [docs/documentation.md](docs/documentation.md) file.
+### Merchant Onboarding
+1. Clover OAuth login
+2. KYC verification
+3. Bank account setup
+4. Wallet configuration
+5. Staff user setup
 
-## Security Features
+## Security
+
+- Encrypted API keys
+- Secure webhook endpoints
 - Role-based access control
-- Protected routes
-- Environment variable protection
-- Type safety with TypeScript
-
-## Contributing
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-Built with Next.js, TypeScript, and Helius
+- Transaction validation
+- Error logging
+- Database backups
+- Data encryption at rest

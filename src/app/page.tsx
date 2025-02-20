@@ -1,25 +1,31 @@
-'use client'
+"use client";
 
-import { usePrivy } from '@privy-io/react-auth'
-import { DashboardLayout } from '@/app/(dashboard)/layout'
-import { LoginPage } from '@/app/(auth)/login/page'
-import { useUserRole } from '@/types/UserRoles'
+import { LoginButton, LogoutButton } from '@/components/auth'
+import Link from 'next/link'
 
-export default function Home() {
-  const { ready, authenticated } = usePrivy()
-  const { role, loading } = useUserRole()
-
-  if (!ready || loading) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        {'Loading...'}
+export default function HomePage() {
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="max-w-md w-full space-y-8">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold">USDC Payment Gateway</h1>
+          <p className="mt-2 text-gray-600">Secure payments for Clover merchants</p>
+        </div>
+        
+        <div className="mt-8 space-y-4">
+          <LoginButton />
+          <LogoutButton />
+          
+          <div className="mt-4 text-center">
+            <Link 
+              href="/dashboard" 
+              className="text-indigo-600 hover:text-indigo-500"
+            >
+              Go to Dashboard
+            </Link>
+          </div>
+        </div>
       </div>
-    )
-  }
-
-  if (!authenticated) {
-    return <LoginPage />
-  }
-
-  return <DashboardLayout />
+    </div>
+  )
 }
