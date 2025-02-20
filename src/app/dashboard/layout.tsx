@@ -1,7 +1,7 @@
 "use client";
 
 import { usePrivy } from '@privy-io/react-auth';
-import { DashboardNav } from '@/components/DashboardNav'
+import DashboardNav from '@/components/DashboardNav'
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
