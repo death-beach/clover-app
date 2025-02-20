@@ -43,11 +43,22 @@ export function useAuth() {
   }, [privyAuthenticated, cloverAuthenticated]);
 
   const getUserRole = (): CloverRole => {
+    // During initial setup with Privy auth
+    if (authSource === 'privy') {
+      // Privy users are always OWNER during setup phase
+      // as they're the ones configuring the merchant account
+      return CLOVER_ROLES.OWNER;
+    }
+
+    // After setup, using Clover auth
     if (authSource === 'clover' && cloverEmployee?.role) {
+      // Use the role directly from Clover's employee system
       return cloverEmployee.role as CloverRole;
     }
-    // Default to lowest permission role for non-Clover auth
-    return CLOVER_ROLES.EMPLOYEE;
+
+    // Fallback safety - should rarely hit this
+    // Could also throw an error or redirect to setup
+    return CLOVER_ROLES.OWNER;
   };
 
   const hasRole = (requiredRole: CloverRole): boolean => {

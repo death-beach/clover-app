@@ -1,22 +1,23 @@
 # Clover USDC Payment Gateway
 
-A streamlined payment gateway enabling Clover merchants to accept USDC payments on Solana.
+A streamlined payment gateway enabling Clover merchants to accept USDC payments on Solana, with seamless integration into existing Clover POS systems.
 
 ## Core Features
 
 - USDC payments via Solana Pay
-- Clover POS integration
+- Direct Clover POS integration
 - Automatic fiat off-ramp via Helio
-- Merchant dashboard
-- Transaction management
+- Role-based merchant dashboard
+- Real-time transaction monitoring
+- Automated settlement process
 
 ## Tech Stack
 
-- Frontend: Next.js + TypeScript
+- Frontend: Next.js 13+ (App Router) + TypeScript
 - Backend: Next.js API Routes
 - Database: PostgreSQL (via Helio)
 - Blockchain: Solana + Helius
-- Auth: Privy + Clover OAuth
+- Auth: Privy (Initial Setup) + Clover OAuth
 - Off-ramp: Helio + Bridge.xyz
 
 ## Project Structure
@@ -24,15 +25,12 @@ A streamlined payment gateway enabling Clover merchants to accept USDC payments 
 ```
 src/
   ├── app/
-  │   ├── (auth)/           # Authentication routes
-  │   │   ├── login/        # Merchant login
-  │   │   └── callback/     # OAuth callback
-  │   ├── (dashboard)/      # Protected merchant dashboard
+  │   ├── dashboard/        # Protected merchant dashboard
   │   │   ├── layout.tsx    # Dashboard layout with nav
   │   │   ├── page.tsx      # Overview/summary
-  │   │   ├── transactions/ # Transaction history
-  │   │   ├── settings/     # Merchant settings
-  │   │   └── users/        # User management
+  │   │   ├── transactions/ # Transaction management
+  │   │   ├── off-ramp/     # Off-ramp management
+  │   │   └── settings/     # Merchant settings
   │   ├── api/              # API routes
   │   │   ├── auth/         # Auth endpoints
   │   │   ├── webhooks/     # Service webhooks
@@ -43,11 +41,49 @@ src/
   ├── lib/                  # Core business logic
   │   ├── clover/          # Clover integration
   │   ├── helio/           # Helio integration
-  │   ├── solana/          # Solana/Helius integration
+  │   ├── helius/          # Helius integration
   │   └── db/              # Database operations
+  ├── config/              # Configuration files
   ├── types/               # TypeScript definitions
-  └── utils/               # Helper functions
+  └── hooks/               # Custom React hooks
 ```
+
+## Authentication Flow
+
+The system uses a two-phase authentication approach:
+
+1. **Initial Setup (Privy Auth)**
+   - Merchant owner connects wallet via Privy
+   - Full access granted for initial setup
+   - Configure wallets and Clover integration
+
+2. **Operational Phase (Clover Auth)**
+   - All staff login through Clover
+   - Roles and permissions inherited from Clover
+   - Seamless integration with existing POS permissions
+
+## Role System
+
+Roles are directly mapped from Clover's employee hierarchy:
+
+- **Owner**
+  - Full system access
+  - Manage all settings
+  - Access all features
+  
+- **Admin**
+  - Full access + off-ramp
+  - Manage settings
+  - View all data
+  
+- **Manager**
+  - Manage staff
+  - View transactions
+  - Process payments
+  
+- **Employee**
+  - Process payments
+  - View transactions
 
 ## Getting Started
 
@@ -90,18 +126,20 @@ src/
 6. Auto off-ramp via Helio
 
 ### Merchant Onboarding
-1. Clover OAuth login
-2. KYC verification
-3. Bank account setup
-4. Wallet configuration
-5. Staff user setup
+1. Connect wallet (Privy)
+2. Configure merchant settings
+3. Connect Clover POS
+4. Complete KYC verification
+5. Set up bank account
+6. Configure auto-settlement
 
 ## Security
 
-- Encrypted API keys
+- End-to-end encryption
 - Secure webhook endpoints
 - Role-based access control
-- Transaction validation
-- Error logging
-- Database backups
+- Real-time transaction validation
+- Comprehensive error logging
+- Automated database backups
 - Data encryption at rest
+- Regular security audits
