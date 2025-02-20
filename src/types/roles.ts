@@ -1,1 +1,0 @@
-// This file is deprecated. Please use types from the auth directory.
