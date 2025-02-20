@@ -8,11 +8,8 @@ import { hasPermission } from '@/config/clover-roles';
 const navigation = [
   { name: 'Overview', href: '/dashboard' },
   { name: 'Transactions', href: '/dashboard/transactions' },
+  { name: 'Manage Roles', href: '/dashboard/roles' },
   { name: 'Wallets', href: '/dashboard/wallets' },
-];
-
-const adminNavigation = [
-  { name: 'Settings', href: '/dashboard/settings' },
 ];
 
 export function DashboardNav() {
