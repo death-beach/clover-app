@@ -1,14 +1,14 @@
 'use client'
 
 import { useMemo } from 'react'
-import { type UserRole, rolePermissions } from '@/types/roles'
 import { usePathname } from 'next/navigation'
+import { CLOVER_ROLES, type CloverRole, CLOVER_ROLE_PERMISSIONS } from '@/config/clover-roles'
 
 export type MenuItem = {
   name: string
   href: string
   icon?: string
-  requiresPermission?: keyof typeof rolePermissions.owner
+  requiresPermission?: keyof typeof CLOVER_ROLE_PERMISSIONS.OWNER
   description?: string
 }
 
@@ -56,13 +56,13 @@ const ALL_MENU_ITEMS: MenuItem[] = [
   }
 ]
 
-export function useNavigation(role: UserRole | undefined) {
+export function useNavigation(role: CloverRole | undefined) {
   const pathname = usePathname()
   
   const menuItems = useMemo(() => {
     if (!role) return []
     
-    const permissions = rolePermissions[role]
+    const permissions = CLOVER_ROLE_PERMISSIONS[role]
     
     return ALL_MENU_ITEMS.filter(item => {
       if (!item.requiresPermission) return true

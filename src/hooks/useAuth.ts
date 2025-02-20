@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { PRIVY_CONFIG } from '@/config/privy';
 import { useCloverAuth } from './useCloverAuth';
 import { useState, useEffect } from 'react';
+import { CLOVER_ROLES, type CloverRole } from '@/config/clover-roles';
 
 export type AuthSource = 'privy' | 'clover' | null;
 
@@ -41,25 +42,21 @@ export function useAuth() {
     }
   }, [privyAuthenticated, cloverAuthenticated]);
 
-  const getUserRole = () => {
-    if (authSource === 'privy') {
-      if (!privyUser?.metadata?.role) {
-        return PRIVY_CONFIG.defaultRole;
-      }
-      return privyUser.metadata.role;
+  const getUserRole = (): CloverRole => {
+    if (authSource === 'clover' && cloverEmployee?.role) {
+      return cloverEmployee.role as CloverRole;
     }
-    if (authSource === 'clover' && cloverEmployee) {
-      return cloverEmployee.role || 'merchant';
-    }
-    return PRIVY_CONFIG.defaultRole;
+    // Default to lowest permission role for non-Clover auth
+    return CLOVER_ROLES.EMPLOYEE;
   };
 
-  const hasRole = (requiredRole: string) => {
+  const hasRole = (requiredRole: CloverRole): boolean => {
     const userRole = getUserRole();
-    const roleIndex = PRIVY_CONFIG.allowedRoles.indexOf(userRole);
-    const requiredRoleIndex = PRIVY_CONFIG.allowedRoles.indexOf(requiredRole);
+    const roleHierarchy = Object.values(CLOVER_ROLES);
+    const userRoleIndex = roleHierarchy.indexOf(userRole);
+    const requiredRoleIndex = roleHierarchy.indexOf(requiredRole);
     
-    return roleIndex >= requiredRoleIndex;
+    return userRoleIndex <= requiredRoleIndex; // Lower index = higher permission in Clover
   };
 
   const handleLogout = async () => {

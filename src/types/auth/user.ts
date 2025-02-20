@@ -1,8 +1,8 @@
-import { type UserRole } from './roles';
+import { type CloverRole } from '@/config/clover-roles';
 
 export interface User {
   id: string;
-  role: UserRole;
+  role: CloverRole;
   email: string;
   name: string;
   createdAt: Date;
@@ -11,7 +11,7 @@ export interface User {
 
 export interface UserSession {
   user: User | null;
-  role: UserRole | null;
+  role: CloverRole | null;
   isLoading: boolean;
   error?: Error;
 }
