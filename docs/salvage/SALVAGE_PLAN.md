@@ -16,7 +16,7 @@
 ## Core Strategy
 1. Keep existing integrations (Helio, Helius, Clover, Solana Pay, Privy)
 2. Delete everything except core payment flow and database code
-3. Simplify roles to Admin/Manager/Cashier
+3. Simplify roles to Import from Clover
 4. Focus on key functionality only
 
 ## Files to Keep
@@ -89,11 +89,11 @@ src/components/
 ## Specific Cleanup Tasks
 
 1. **Simplify Role System**
-   - Remove complex permission system
-   - Keep basic role enum (Admin/Manager/Cashier)
-   - Remove role-based route middleware
-   - Simplify auth checks
-
+   - Pulling roles from Clover API
+   - Owner: Full access
+   - Admin: Full access + off-ramp
+   - Manager: Manage staff + transfers + transaction view
+   - Employee: Process payments + view transactions
 2. **Clean Database Schema**
    - Remove unused tables
    - Simplify to core tables from PRD
