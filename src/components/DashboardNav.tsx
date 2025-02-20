@@ -5,7 +5,8 @@ import { usePrivy } from '@privy-io/react-auth';
 
 const DashboardNav = () => {
   const { logout } = usePrivy();
-  const { userRole, merchantName } = useAuth();
+  const { role, user } = useAuth();
+  const merchantName = user?.name || 'Merchant Dashboard';
 
   const navItems = [
     {
@@ -31,7 +32,7 @@ const DashboardNav = () => {
   ];
 
   const filteredNavItems = navItems.filter(
-    (item) => userRole && item.roles.includes(userRole)
+    (item) => role && item.roles.includes(role)
   );
 
   return (
