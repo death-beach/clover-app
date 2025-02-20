@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
-import { CloverRole } from '@/config/clover-roles';
+import { CLOVER_ROLES } from '@/config/clover-roles';
 import Link from 'next/link';
 import { usePrivy } from '@privy-io/react-auth';
 
@@ -11,22 +11,22 @@ const DashboardNav = () => {
     {
       name: 'Dashboard',
       href: '/dashboard',
-      roles: [CloverRole.OWNER, CloverRole.ADMIN, CloverRole.MANAGER, CloverRole.EMPLOYEE],
+      roles: [CLOVER_ROLES.OWNER, CLOVER_ROLES.ADMIN, CLOVER_ROLES.MANAGER, CLOVER_ROLES.EMPLOYEE],
     },
     {
       name: 'Transactions',
       href: '/dashboard/transactions',
-      roles: [CloverRole.OWNER, CloverRole.ADMIN, CloverRole.MANAGER],
+      roles: [CLOVER_ROLES.OWNER, CLOVER_ROLES.ADMIN, CLOVER_ROLES.MANAGER],
     },
     {
       name: 'Off-Ramp',
       href: '/dashboard/off-ramp',
-      roles: [CloverRole.OWNER, CloverRole.ADMIN],
+      roles: [CLOVER_ROLES.OWNER, CLOVER_ROLES.ADMIN],
     },
     {
       name: 'Settings',
       href: '/dashboard/settings',
-      roles: [CloverRole.OWNER, CloverRole.ADMIN],
+      roles: [CLOVER_ROLES.OWNER, CLOVER_ROLES.ADMIN],
     },
   ];
 
