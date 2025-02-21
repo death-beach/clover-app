@@ -9,10 +9,6 @@ const configSchema = z.object({
   // Solana
   heliusApiKey: z.string(),
   
-  // Helio
-  helioApiKey: z.string(),
-  helioWebhookSecret: z.string(),
-  
   // Database
   databaseUrl: z.string(),
   
@@ -22,7 +18,6 @@ const configSchema = z.object({
   appUrl: z.string(),
   
   // Fees
-  helioFee: z.number().default(0.01), // 1%
   offRampFee: z.number().default(0.005), // 0.50%
   merchantFee: z.number().default(0.022), // 2.2%
   merchantFeeFixed: z.number().default(0.10), // $0.10
@@ -36,10 +31,6 @@ export const config = configSchema.parse({
   
   // Solana
   heliusApiKey: process.env.HELIUS_API_KEY,
-  
-  // Helio
-  helioApiKey: process.env.HELIO_API_KEY,
-  helioWebhookSecret: process.env.HELIO_WEBHOOK_SECRET,
   
   // Database
   databaseUrl: process.env.DATABASE_URL,
