@@ -58,11 +58,28 @@ Charon Gateway is a Solana-based USDC payment gateway designed for Clover mercha
 - Transaction history
 - Basic reporting
 
-### 4. Off-ramping
-- Automatic USDC to fiat conversion
-- Circle payout initiation
-- Payout status tracking
-- Failure handling and retries
+### 4. Off-ramping (MVP)
+- Merchants receive USDC directly to their wallet
+- No automatic fiat conversion
+- Merchants handle USDC conversion manually
+- Wallet address management
+
+### 5. FUTURE Off-ramp Process Details
+- Merchants complete individual KYC through USDC Access widget or Sphere
+- Manual off-ramp process with following steps:
+  1. Initiate off-ramp session
+  2. Merchant completes KYC
+  3. Select bank account for conversion
+  4. Manually transfer USDC
+- Webhook notifications for session state changes
+- Merchant-controlled conversion process
+
+### 5.1 FUTURE Technical Off-ramp Integration
+- Use USDC Access widget embedded in application or Sphere API
+- API endpoints for session management:
+  - POST /w3s/ramp/sessions (create session)
+  - GET /w3s/ramp/sessions (retrieve session details)
+- Webhook support for tracking conversion status
 
 ## Database Schema
 
