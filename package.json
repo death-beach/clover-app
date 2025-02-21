@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
     "@privy-io/react-auth": "^1.73.0",
     "@solana/pay": "^0.2.5",
     "@solana/web3.js": "^1.95.2",
