@@ -2,6 +2,25 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { WebhookType } from '../../../lib/helius/config';
 import { HeliusWebhookData, TokenTransfer, WebhookData } from '../../../lib/helius/types';
 import { USDC_MINT } from '../../../config/tokens';
+import { createClient } from '@supabase/supabase-js';
+
+// Database types
+interface Transaction {
+  id: string;
+  merchant_id: string;
+  amount: number;
+  status: 'pending' | 'completed' | 'failed';
+  solana_signature: string;
+  clover_order_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Only allow POST requests
@@ -106,22 +125,48 @@ async function processUSDCTransfer(transfer: TokenTransfer, signature?: string) 
       return;
     }
 
-    // TODO: Implement these functions based on your business logic
-    // 1. Verify if this transfer is related to a pending payment
-    // 2. Update payment status if verified
-    // 3. Trigger any necessary notifications or follow-up actions
-    
-    // Example implementation structure:
-    // const payment = await findPendingPayment(transfer);
-    // if (payment) {
-    //   await updatePaymentStatus(payment.id, 'completed', {
-    //     signature,
-    //     amount: transfer.amount,
-    //     from: transfer.fromUserAccount,
-    //     to: transfer.toUserAccount,
-    //   });
-    //   await sendPaymentConfirmation(payment);
-    // }
+    // Find pending transaction for this merchant
+    const { data: pendingTx, error: pendingError } = await supabase
+      .from('transactions')
+      .select('id, merchant_id, amount, clover_order_id')
+      .eq('status', 'pending')
+      .eq('amount', transfer.amount)
+      .single();
+
+    if (pendingError) {
+      console.warn('No pending transaction found for transfer:', transfer);
+      return;
+    }
+
+    // Verify merchant wallet matches
+    const { data: merchant, error: merchantError } = await supabase
+      .from('merchants')
+      .select('wallet_address')
+      .eq('id', pendingTx.merchant_id)
+      .single();
+
+    if (merchantError || merchant.wallet_address.toLowerCase() !== transfer.toUserAccount.toLowerCase()) {
+      console.warn('Merchant wallet mismatch for transfer:', transfer);
+      return;
+    }
+
+    // Update transaction status
+    const { error: updateError } = await supabase
+      .from('transactions')
+      .update({
+        status: 'completed',
+        solana_signature: signature,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', pendingTx.id);
+
+    if (updateError) {
+      throw new Error(`Failed to update transaction status: ${updateError.message}`);
+    }
+
+    // TODO: Add webhook call to Clover API to update order status
+    // This will be implemented in a separate phase
+
   } catch (error) {
     console.error('Error processing USDC transfer:', error);
     throw new Error(`USDC transfer processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -135,22 +180,46 @@ async function storeTransactionData(transaction: WebhookData) {
       return;
     }
 
-    // TODO: Implement transaction storage logic
-    // This could be storing in your database for:
-    // - Transaction history
-    // - Audit trails
-    // - Analytics
-    
-    // Example implementation structure:
-    // await prisma.transaction.create({
-    //   data: {
-    //     signature: transaction.signature,
-    //     timestamp: transaction.timestamp,
-    //     type: transaction.type,
-    //     description: transaction.description,
-    //     // ... other relevant fields
-    //   }
-    // });
+    // Calculate total USDC amount from token transfers
+    const usdcAmount = transaction.tokenTransfers
+      ?.filter(transfer => transfer.mint?.toLowerCase() === USDC_MINT.toLowerCase())
+      .reduce((total, transfer) => total + (transfer.amount || 0), 0) || 0;
+
+    // Find merchant by recipient wallet address
+    const recipientAddress = transaction.tokenTransfers?.[0]?.toUserAccount;
+    if (!recipientAddress) {
+      console.warn('No recipient address found in transaction');
+      return;
+    }
+
+    // Get merchant ID from wallet address
+    const { data: merchant, error: merchantError } = await supabase
+      .from('merchants')
+      .select('id')
+      .eq('wallet_address', recipientAddress)
+      .single();
+
+    if (merchantError) {
+      console.error('Error finding merchant:', merchantError);
+      return;
+    }
+
+    // Store transaction data
+    const { error: insertError } = await supabase
+      .from('transactions')
+      .insert({
+        merchant_id: merchant.id,
+        amount: usdcAmount,
+        status: 'completed',
+        solana_signature: transaction.signature,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+
+    if (insertError) {
+      throw new Error(`Failed to insert transaction: ${insertError.message}`);
+    }
+
   } catch (error) {
     console.error('Error storing transaction data:', error);
     throw new Error(`Transaction storage failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
