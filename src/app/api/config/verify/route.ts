@@ -13,7 +13,7 @@ export async function GET() {
   }
 
   const apiKey = authHeader.split(' ')[1];
-  if (apiKey !== process.env.NEXT_PUBLIC_HELIO_API_KEY) {
+  if (apiKey !== process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     return NextResponse.json(
       { error: 'Invalid API key' },
       { status: 401 }
@@ -22,8 +22,8 @@ export async function GET() {
 
   // Verify required environment variables
   const requiredEnvVars = [
-    'NEXT_PUBLIC_HELIO_API_KEY',
-    'NEXT_PUBLIC_HELIO_SECRET_KEY',
+    'NEXT_PUBLIC_SUPABASE_URL',
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
     'NEXT_PUBLIC_HELIUS_API_KEY',
     'CLOVER_API_KEY',
     'CLOVER_API_SECRET'
@@ -44,7 +44,7 @@ export async function GET() {
     status: 'success',
     environment: process.env.NODE_ENV,
     config: {
-      helioConfigured: true,
+      supabaseConfigured: true,
       heliusConfigured: true,
       cloverConfigured: true
     }
