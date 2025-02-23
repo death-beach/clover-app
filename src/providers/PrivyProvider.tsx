@@ -1,7 +1,6 @@
 "use client";
 
 import { PrivyProvider as BasePrivyProvider } from '@privy-io/react-auth';
-import { PRIVY_CONFIG } from '@/config/privy';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 
@@ -13,19 +12,17 @@ export function PrivyProvider({ children }: { children: React.ReactNode }) {
     router.push('/dashboard');
   }, [router]);
 
-  const handleLogout = useCallback(() => {
-    console.log('User logged out');
-    router.push('/');
-  }, [router]);
-
   return (
     <BasePrivyProvider
-      appId={PRIVY_CONFIG.appId as string}
+      appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID as string}
       config={{
-        loginMethods: PRIVY_CONFIG.loginMethods,
-        appearance: PRIVY_CONFIG.appearance,
+        loginMethods: ['email', 'wallet'],
+        appearance: {
+          theme: 'light',
+          accentColor: '#4F46E5',
+          logo: '/logo.png',
+        },
         onSuccess: handleLogin,
-        onLogout: handleLogout,
         onError: (error) => {
           console.error('Privy authentication error:', error);
         },
