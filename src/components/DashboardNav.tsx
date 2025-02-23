@@ -20,8 +20,8 @@ const DashboardNav = () => {
       roles: [CLOVER_ROLES.OWNER, CLOVER_ROLES.ADMIN, CLOVER_ROLES.MANAGER],
     },
     {
-      name: 'Off-Ramp',
-      href: '/dashboard/off-ramp',
+      name: 'Wallets',
+      href: '/dashboard/wallets',
       roles: [CLOVER_ROLES.OWNER, CLOVER_ROLES.ADMIN],
     },
     {

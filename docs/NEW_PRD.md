@@ -50,7 +50,7 @@ Charon Gateway is a Solana-based USDC payment gateway designed for Clover mercha
 ### 2. Merchant Management
 - Merchant onboarding
 - Wallet address management
-- Bank account linking for payouts
+- Connect external wallet or create wallet via Privy
 - Basic merchant dashboard
 
 ### 3. Transaction Management
