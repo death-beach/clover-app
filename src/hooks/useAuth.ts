@@ -30,21 +30,40 @@ export function useAuth() {
   } = useCloverAuth();
 
   useEffect(() => {
+    if (!privyReady) return;
+
     console.log('Privy Authenticated:', privyAuthenticated);
     console.log('Privy User:', privyUser);
     console.log('Wallet Address:', privyUser?.wallet?.address);
+
     if (privyAuthenticated && privyUser?.wallet?.address) {
       fetch('/api/set-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ walletAddress: privyUser.wallet.address }),
-      }).then(() => setAuthSource('privy'));
+      })
+        .then(() =>
+          fetch('/api/auth/clover/session', { 
+            credentials: 'include',
+            headers: { 'Cookie': document.cookie } // Sync cookies
+          })
+            .then(res => res.json())
+            .then(data => {
+              console.log('Session Data:', data);
+              setAuthSource('privy');
+              router.push('/dashboard');
+            })
+        );
     } else if (cloverAuthenticated) {
       setAuthSource('clover');
     } else {
-      setAuthSource(null);
+      fetch('/api/auth/clover/session', { credentials: 'include' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.type === 'clover') setAuthSource('clover');
+        });
     }
-  }, [privyAuthenticated, cloverAuthenticated, privyUser?.wallet?.address]);
+  }, [privyAuthenticated, cloverAuthenticated, privyUser?.wallet?.address, privyReady, router]);
 
   const getUserRole = (): CloverRole => {
     if (authSource === 'privy') {
@@ -71,6 +90,7 @@ export function useAuth() {
     } else if (authSource === 'clover') {
       await cloverLogout();
     }
+    setAuthSource(null);
     router.push('/');
   };
 
@@ -78,7 +98,7 @@ export function useAuth() {
     if (type === 'privy') {
       await privyLogin();
     } else {
-      router.push('/api/auth/clover/login');
+      router.push('/api/auth/clover/authorize');
     }
   };
 

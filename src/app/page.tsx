@@ -1,11 +1,23 @@
 "use client";
 
-import { LoginForm } from '@/components/auth'
-import { useAuth } from '@/hooks/useAuth'
-import Link from 'next/link'
+import { LoginForm } from '@/components/auth';
+import { useAuth } from '@/hooks/useAuth';
+import Link from 'next/link';
+import { useEffect } from 'react';
 
 export default function HomePage() {
   const { isAuthenticated, isLoading, authSource } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && authSource === 'privy') {
+      fetch('/api/auth/clover/session', { 
+        credentials: 'include',
+        headers: { 'Cookie': document.cookie } // Force cookies
+      })
+        .then(res => res.json())
+        .then(data => console.log('Session Data:', data));
+    }
+  }, [isLoading, isAuthenticated, authSource]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
@@ -19,7 +31,6 @@ export default function HomePage() {
             </p>
           )}
         </div>
-        
         <div className="mt-8 space-y-4">
           {isLoading ? (
             <div className="text-center">
@@ -28,13 +39,9 @@ export default function HomePage() {
           ) : (
             <>
               <LoginForm />
-              
               {isAuthenticated && (
                 <div className="mt-4 text-center">
-                  <Link 
-                    href="/dashboard" 
-                    className="text-indigo-600 hover:text-indigo-500"
-                  >
+                  <Link href="/dashboard" className="text-indigo-600 hover:text-indigo-500">
                     Go to Dashboard
                   </Link>
                 </div>
@@ -44,5 +51,5 @@ export default function HomePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

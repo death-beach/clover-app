@@ -1,46 +1,64 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { cookies } from 'next/headers';
-import { getCloverAPIClient } from '@/lib/clover/api-client';
+import { createClient } from '@supabase/supabase-js';
 
-export async function GET() {
+export async function GET(request) {
   try {
-    const cloverSession = await getServerSession(authOptions);
-    console.log('Clover Session:', cloverSession);
-
     const cookieStore = await cookies();
+    const cloverToken = cookieStore.get('clover_access_token')?.value;
     const privyAddress = cookieStore.get('privy:address')?.value;
-    console.log('Wallet Address:', privyAddress);
-    console.log('All Cookies:', cookieStore.getAll());
+    const cookieHeader = request.headers.get('cookie');
 
-    if (cloverSession) {
-      const cloverClient = getCloverAPIClient();
-      const isValid = await cloverClient.validateSession();
-      console.log('Clover Session Valid:', isValid);
-      if (isValid) {
-        return NextResponse.json({ 
-          type: 'clover',
-          session: cloverSession 
-        });
-      }
-    }
+    console.log('Clover Token:', cloverToken);
+    console.log('Privy Address:', privyAddress);
+    console.log('Cookie Header:', cookieHeader);
 
-    if (privyAddress) {
+    const supabase = createClient(
+      process.env.SUPABASE_URL || '',
+      process.env.SUPABASE_ANON_KEY || ''
+    );
+
+    if (privyAddress && !cloverToken) { // First login onboarding
+      const { data: merchant } = await supabase
+        .from('merchants')
+        .select('clover_merchant_id')
+        .eq('wallet_address', privyAddress)
+        .single();
+
       return NextResponse.json({
         type: 'wallet',
-        session: { address: privyAddress }
+        session: { 
+          address: privyAddress,
+          merchantId: merchant?.clover_merchant_id || 'pending'
+        }
+      });
+    }
+
+    if (cloverToken) { // Post-onboarding Clover login
+      const { data: merchant } = await supabase
+        .from('merchants')
+        .select('wallet_address')
+        .eq('clover_merchant_id', 'ACCC25YXXABZ1')
+        .single();
+
+      return NextResponse.json({
+        type: 'clover',
+        session: { 
+          accessToken: cloverToken, 
+          merchantId: 'ACCC25YXXABZ1',
+          walletAddress: merchant?.wallet_address
+        }
       });
     }
 
     return NextResponse.json(
-      { error: 'No active session' }, 
+      { error: 'No active session' },
       { status: 400 }
     );
   } catch (error) {
     console.error('Session check error:', error);
     return NextResponse.json(
-      { error: 'Failed to check session' }, 
+      { error: 'Failed to check session' },
       { status: 500 }
     );
   }

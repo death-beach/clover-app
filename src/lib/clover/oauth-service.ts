@@ -32,11 +32,14 @@ export class CloverOAuthService {
       body: params.toString(),
     });
 
+    const data = await response.json();
+    console.log('Raw Clover Response:', JSON.stringify(data, null, 2)); // Debug
+
     if (!response.ok) {
       throw new Error('Failed to exchange code for tokens');
     }
 
-    return response.json();
+    return data;
   }
 
   // Refresh access token using refresh token

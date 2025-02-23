@@ -36,7 +36,7 @@ export function PrivyProvider({ children }: { children: React.ReactNode }) {
         },
         embeddedWallets: {
           enabled: true,
-          createOnLogin: 'all-users',
+          createOnLogin: 'users-without-wallets', // Only for no-wallet users
           defaultChain: 'solana',
         },
         onSuccess: handleLogin,

@@ -9,20 +9,17 @@ export async function GET(request: NextRequest) {
   const state = searchParams.get('state');
   const error = searchParams.get('error');
   
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const storedState = cookieStore.get('clover_oauth_state')?.value;
 
-  // Clear the state cookie
-  cookieStore.delete('clover_oauth_state');
+  await cookieStore.delete('clover_oauth_state');
 
-  // Handle errors
   if (error) {
     return NextResponse.redirect(
       `${process.env.NEXTAUTH_URL}/auth/error?error=${error}`
     );
   }
 
-  // Validate state parameter
   if (!state || !storedState || state !== storedState) {
     return NextResponse.redirect(
       `${process.env.NEXTAUTH_URL}/auth/error?error=invalid_state`
@@ -30,13 +27,11 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Exchange code for tokens
     const tokens = await CloverOAuthService.exchangeCodeForTokens(code as string);
+    console.log('Tokens from Clover:', JSON.stringify(tokens, null, 2));
     
-    // Set secure cookies with tokens and merchant info
     const response = NextResponse.redirect(`${process.env.NEXTAUTH_URL}/dashboard`);
     
-    // Set access token cookie
     response.cookies.set('clover_access_token', tokens.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -44,31 +39,30 @@ export async function GET(request: NextRequest) {
       maxAge: tokens.expires_in,
     });
 
-    // Set refresh token cookie
     response.cookies.set('clover_refresh_token', tokens.refresh_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+      maxAge: 30 * 24 * 60 * 60,
     });
 
-    // Set merchant ID cookie
     response.cookies.set('clover_merchant_id', tokens.merchant_id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+      maxAge: 30 * 24 * 60 * 60,
     });
 
-    // If employee_id is present, set it too
     if (tokens.employee_id) {
       response.cookies.set('clover_employee_id', tokens.employee_id, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 30 * 24 * 60 * 60, // 30 days
+        maxAge: 30 * 24 * 60 * 60,
       });
     }
+
+    console.log('Cookies set:', response.cookies.get('clover_access_token')); // Added here
 
     return response;
   } catch (error) {
