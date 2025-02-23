@@ -109,7 +109,6 @@ export class CloverAPIClient {
   }
 
   // ... rest of the methods remain the same ...
-}
 
   async getCurrentEmployee(employeeId: string) {
     try {

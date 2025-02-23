@@ -13,7 +13,6 @@ export function useAuth() {
   const router = useRouter();
   const [authSource, setAuthSource] = useState<AuthSource>(null);
   
-  // Privy Auth
   const { 
     login: privyLogin, 
     logout: privyLogout, 
@@ -22,7 +21,6 @@ export function useAuth() {
     ready: privyReady 
   } = usePrivy();
 
-  // Clover Auth
   const {
     isAuthenticated: cloverAuthenticated,
     isLoading: cloverLoading,
@@ -31,33 +29,30 @@ export function useAuth() {
     refreshSession: refreshCloverSession
   } = useCloverAuth();
 
-  // Track auth source
   useEffect(() => {
-    if (privyAuthenticated) {
-      setAuthSource('privy');
+    console.log('Privy Authenticated:', privyAuthenticated);
+    console.log('Privy User:', privyUser);
+    console.log('Wallet Address:', privyUser?.wallet?.address);
+    if (privyAuthenticated && privyUser?.wallet?.address) {
+      fetch('/api/set-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ walletAddress: privyUser.wallet.address }),
+      }).then(() => setAuthSource('privy'));
     } else if (cloverAuthenticated) {
       setAuthSource('clover');
     } else {
       setAuthSource(null);
     }
-  }, [privyAuthenticated, cloverAuthenticated]);
+  }, [privyAuthenticated, cloverAuthenticated, privyUser?.wallet?.address]);
 
   const getUserRole = (): CloverRole => {
-    // During initial setup with Privy auth
     if (authSource === 'privy') {
-      // Privy users are always OWNER during setup phase
-      // as they're the ones configuring the merchant account
       return CLOVER_ROLES.OWNER;
     }
-
-    // After setup, using Clover auth
     if (authSource === 'clover' && cloverEmployee?.role) {
-      // Use the role directly from Clover's employee system
       return cloverEmployee.role as CloverRole;
     }
-
-    // Fallback safety - should rarely hit this
-    // Could also throw an error or redirect to setup
     return CLOVER_ROLES.OWNER;
   };
 
@@ -66,13 +61,13 @@ export function useAuth() {
     const roleHierarchy = Object.values(CLOVER_ROLES);
     const userRoleIndex = roleHierarchy.indexOf(userRole);
     const requiredRoleIndex = roleHierarchy.indexOf(requiredRole);
-    
-    return userRoleIndex <= requiredRoleIndex; // Lower index = higher permission in Clover
+    return userRoleIndex <= requiredRoleIndex;
   };
 
   const handleLogout = async () => {
     if (authSource === 'privy') {
       await privyLogout();
+      document.cookie = 'privy:address=; path=/; max-age=0';
     } else if (authSource === 'clover') {
       await cloverLogout();
     }

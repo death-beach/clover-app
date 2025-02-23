@@ -1,18 +1,18 @@
-import { usePrivy } from '@privy-io/react-auth';
+import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 const LoginForm = () => {
-  const { login, ready, authenticated } = usePrivy();
+  const { login, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (ready && authenticated) {
+    if (!isLoading && isAuthenticated) {
       router.push('/dashboard');
     }
-  }, [ready, authenticated, router]);
+  }, [isLoading, isAuthenticated, router]);
 
-  if (!ready) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
@@ -25,7 +25,7 @@ const LoginForm = () => {
           </h2>
         </div>
         <button
-          onClick={login}
+          onClick={() => login('privy')}
           className="group relative flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
         >
           Sign in with Email or Wallet
