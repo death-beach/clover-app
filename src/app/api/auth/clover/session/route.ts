@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
 
-export async function GET(request) {
+export async function GET(request: NextRequest) {
   try {
     const cookieStore = await cookies();
     const cloverToken = cookieStore.get('clover_access_token')?.value;
@@ -13,14 +13,13 @@ export async function GET(request) {
     console.log('Privy Address:', privyAddress);
     console.log('Cookie Header:', cookieHeader);
 
-    // Clear stale Clover cookies on Privy login
     if (privyAddress && cloverToken) {
       cookieStore.delete('clover_access_token');
-      cookieStore.delete('clover_merchant_id');
       cookieStore.delete('clover_refresh_token');
+      cookieStore.delete('clover_merchant_id');
     }
 
-    if (privyAddress) { // First login onboarding
+    if (privyAddress) {
       const supabase = createClient(
         process.env.SUPABASE_URL || '',
         process.env.SUPABASE_ANON_KEY || ''
@@ -36,6 +35,27 @@ export async function GET(request) {
         session: { 
           address: privyAddress,
           merchantId: merchant?.clover_merchant_id || 'pending'
+        }
+      });
+    }
+
+    if (cloverToken) {
+      const supabase = createClient(
+        process.env.SUPABASE_URL || '',
+        process.env.SUPABASE_ANON_KEY || ''
+      );
+      const { data: merchant } = await supabase
+        .from('merchants')
+        .select('wallet_address')
+        .eq('clover_merchant_id', 'ACCC25YXXABZ1')
+        .single();
+
+      return NextResponse.json({
+        type: 'clover',
+        session: { 
+          accessToken: cloverToken, 
+          merchantId: 'ACCC25YXXABZ1',
+          walletAddress: merchant?.wallet_address
         }
       });
     }
