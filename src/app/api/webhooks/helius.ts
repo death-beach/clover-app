@@ -16,14 +16,14 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
     );
 
     const event = body[0];
-    const transfers = event.tokenTransfers as TokenTransfer[];
+    const transfers = event.enriched.tokenTransfers as TokenTransfer[]; // Fixed: Use enriched.tokenTransfers
     if (transfers && transfers.length > 0) {
       for (const transfer of transfers) {
         if (transfer.mint === USDC_MINT) {
           const { error } = await supabase
             .from('transactions')
             .insert({
-              merchant_id: 'unknown', // No accountData, use placeholder
+              merchant_id: 'unknown', // Placeholder since accountData isn’t used
               amount_usdc: transfer.amount / 1_000_000,
               status: 'completed',
               solana_signature: event.signature,
