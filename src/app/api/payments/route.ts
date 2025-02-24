@@ -15,10 +15,11 @@ export async function POST(req: NextRequest) {
     const { merchantId, cloverOrderId, amountUsd } = createPaymentSchema.parse(body);
 
     // 1. Get merchant details
-    const [merchant] = await sql`
+    const { rows } = await sql`
       SELECT * FROM merchants 
       WHERE merchant_id = ${merchantId}
     `;
+    const merchant = rows[0]; // Fix: Use rows array instead of destructuring
 
     if (!merchant) {
       return NextResponse.json(
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Create transaction record
-    const [transaction] = await sql`
+    const { rows: transactionRows } = await sql`
       INSERT INTO transactions (
         merchant_id,
         clover_order_id,
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
       )
       RETURNING *
     `;
+    const transaction = transactionRows[0]; // Same fix for transaction
 
     // 3. Generate Solana Pay URL
     const solanaPayUrl = new URL('solana:', merchant.main_wallet_address);
