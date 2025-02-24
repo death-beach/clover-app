@@ -37,26 +37,12 @@ export class CloverAPIClient {
     this.refreshToken = refreshToken;
   }
 
-  private async refreshTokenIfNeeded() {
+  private async refreshTokenIfNeeded(): Promise<void> {
     try {
       const response = await CloverOAuthService.refreshAccessToken(this.refreshToken);
       this.accessToken = response.access_token;
       this.refreshToken = response.refresh_token;
-      
-      // Update cookies with new tokens
-      const cookieStore = cookies();
-      cookieStore.set('clover_access_token', response.access_token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: response.expires_in,
-      });
-      cookieStore.set('clover_refresh_token', response.refresh_token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 30 * 24 * 60 * 60, // 30 days
-      });
+      // Removed cookie setting - handle in route handler
     } catch (error) {
       console.error('Error refreshing token:', error);
       throw new Error('Failed to refresh access token');
@@ -77,10 +63,8 @@ export class CloverAPIClient {
       });
 
       if (response.status === 401) {
-        // Token expired, try to refresh
         await this.refreshTokenIfNeeded();
         
-        // Retry the request with new token
         const retryResponse = await fetch(url, {
           ...options,
           headers: {
@@ -108,8 +92,6 @@ export class CloverAPIClient {
     }
   }
 
-  // ... rest of the methods remain the same ...
-
   async getCurrentEmployee(employeeId: string) {
     try {
       const employee = await this.fetch<CloverEmployee>(
@@ -130,7 +112,6 @@ export class CloverAPIClient {
 
   async validateSession() {
     try {
-      // Attempt to fetch merchant info to validate the session
       await this.fetch(`/merchants/${this.merchantId}`);
       return true;
     } catch (error) {
@@ -140,7 +121,6 @@ export class CloverAPIClient {
   }
 }
 
-// Create a singleton instance for the current merchant
 let apiClientInstance: CloverAPIClient | null = null;
 
 export function getCloverAPIClient() {
@@ -158,4 +138,31 @@ export function getCloverAPIClient() {
   }
 
   return apiClientInstance;
+}
+
+// Utility to set cookies in a route handler
+export async function setCloverCookies(tokens: {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+  merchant_id: string;
+}) {
+  const cookieStore = cookies();
+  cookieStore.set('clover_access_token', tokens.access_token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: tokens.expires_in,
+  });
+  cookieStore.set('clover_refresh_token', tokens.refresh_token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  });
+  cookieStore.set('clover_merchant_id', tokens.merchant_id, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+  });
 }
