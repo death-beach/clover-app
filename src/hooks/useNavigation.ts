@@ -1,16 +1,16 @@
-'use client'
+'use client';
 
-import { useMemo } from 'react'
-import { usePathname } from 'next/navigation'
-import { CLOVER_ROLES, type CloverRole, CLOVER_ROLE_PERMISSIONS } from '@/config/clover-roles'
+import { useMemo } from 'react';
+import { usePathname } from 'next/navigation';
+import { CLOVER_ROLES, type CloverRole, CLOVER_ROLE_PERMISSIONS } from '@/config/clover-roles';
 
 export type MenuItem = {
-  name: string
-  href: string
-  icon?: string
-  requiresPermission?: keyof typeof CLOVER_ROLE_PERMISSIONS.OWNER
-  description?: string
-}
+  name: string;
+  href: string;
+  icon?: string;
+  requiresPermission?: keyof typeof CLOVER_ROLE_PERMISSIONS.OWNER;
+  description?: string;
+};
 
 const ALL_MENU_ITEMS: MenuItem[] = [
   { 
@@ -51,31 +51,31 @@ const ALL_MENU_ITEMS: MenuItem[] = [
     name: 'Settings', 
     href: '/settings',
     icon: 'cog',
-    requiresPermission: 'canModifySettings',
+    requiresPermission: 'canManageSettings', // Changed to match clover-roles.ts
     description: 'Configure system settings'
   }
-]
+];
 
 export function useNavigation(role: CloverRole | undefined) {
-  const pathname = usePathname()
+  const pathname = usePathname();
   
   const menuItems = useMemo(() => {
-    if (!role) return []
+    if (!role) return [];
     
-    const permissions = CLOVER_ROLE_PERMISSIONS[role]
+    const permissions = CLOVER_ROLE_PERMISSIONS[role];
     
     return ALL_MENU_ITEMS.filter(item => {
-      if (!item.requiresPermission) return true
-      return permissions[item.requiresPermission]
-    })
-  }, [role])
+      if (!item.requiresPermission) return true;
+      return permissions[item.requiresPermission];
+    });
+  }, [role]);
 
   const currentItem = useMemo(() => {
-    return menuItems.find(item => item.href === pathname)
-  }, [menuItems, pathname])
+    return menuItems.find(item => item.href === pathname);
+  }, [menuItems, pathname]);
 
   return { 
     menuItems,
     currentItem
-  }
+  };
 }
