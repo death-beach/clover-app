@@ -1,21 +1,22 @@
 import { PrivyProvider } from '@/providers/PrivyProvider';
 import { CloverSessionProvider } from '@/providers/CloverSessionProvider';
-import { ApiProvider } from '@/contexts/api/ApiContext'; // Add this
-import { type PropsWithChildren } from 'react';
-import './globals.css';
+import { ApiProvider } from '@/contexts/api/ApiContext';
+import { AuthProvider } from '@/contexts/auth/AuthContext'; // Add this
 
 export const metadata = {
   title: 'USDC Payment Gateway',
   description: 'Solana-based USDC Payment Gateway for Clover Merchants',
 };
 
-export default function RootLayout({ children }: PropsWithChildren) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
         <PrivyProvider>
           <CloverSessionProvider>
-            <ApiProvider>{children}</ApiProvider> {/* Nest inside */}
+            <ApiProvider>
+              <AuthProvider>{children}</AuthProvider>
+            </ApiProvider>
           </CloverSessionProvider>
         </PrivyProvider>
       </body>
