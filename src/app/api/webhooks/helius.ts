@@ -1,70 +1,46 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
-import { config } from '@/config';
-import { WebhookPayload, TokenTransfer } from '@/lib/helius/types'; // Correct path
+import { NextApiRequest, NextApiResponse } from 'next';
+import { WebhookPayload, TokenTransfer } from '@/lib/helius/types';
+import { USDC_MINT } from '@/config/tokens';
+import { createClient } from '@supabase/supabase-js';
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextApiRequest, res: NextApiResponse) {
   try {
-    // 1. Verify webhook signature
-    const signature = req.headers.get('x-signature');
-    if (!signature) {
-      return NextResponse.json(
-        { error: 'Missing signature' },
-        { status: 401 }
-      );
-    }
-
-    // TODO: Implement signature verification
-
-    // 2. Parse webhook payload
-    const body = await req.json() as WebhookPayload[];
+    const body = req.body as WebhookPayload[];
     if (!body || !Array.isArray(body) || body.length === 0) {
-      return NextResponse.json(
-        { error: 'Invalid webhook payload' },
-        { status: 400 }
-      );
+      return res.status(400).json({ error: 'Invalid webhook payload' });
     }
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
 
     const event = body[0];
-    const txSignature = event.signature;
-    const accountKeys = event.accountData?.map(data => data.account) || [];
     const transfers = event.tokenTransfers as TokenTransfer[];
-    const amount = transfers?.[0]?.amount / 1_000_000 || 0;
+    if (transfers && transfers.length > 0) {
+      for (const transfer of transfers) {
+        if (transfer.mint === USDC_MINT) {
+          const { error } = await supabase
+            .from('transactions')
+            .insert({
+              merchant_id: 'unknown', // No accountData, use placeholder
+              amount_usdc: transfer.amount / 1_000_000,
+              status: 'completed',
+              solana_signature: event.signature,
+              created_at: new Date(event.timestamp * 1000).toISOString(),
+            });
 
-    // 3. Update transaction status
-    const { rows } = await sql`
-      UPDATE transactions
-      SET 
-        status = 'confirmed',
-        solana_signature = ${txSignature}
-      WHERE transaction_id = ${event.reference || transfers?.[0]?.reference}
-      RETURNING *
-    `;
-    const transaction = rows[0];
-
-    if (!transaction) {
-      return NextResponse.json(
-        { error: 'Transaction not found' },
-        { status: 404 }
-      );
+          if (error) {
+            console.error('Supabase insert error:', error);
+            return res.status(500).json({ error: 'Failed to log transaction' });
+          }
+        }
+      }
     }
 
-    // 4. Get merchant details
-    const { rows: merchantRows } = await sql`
-      SELECT * FROM merchants
-      WHERE merchant_id = ${transaction.merchant_id}
-    `;
-    const merchant = merchantRows[0];
-
-    // 5. Trigger off-ramp if auto-enabled
-    // TODO: Implement Helio off-ramp integration
-
-    return NextResponse.json({ success: true });
+    return res.status(200).json({ message: 'Webhook processed' });
   } catch (error) {
-    console.error('Webhook processing error:', error);
-    return NextResponse.json(
-      { error: 'Failed to process webhook' },
-      { status: 500 }
-    );
+    console.error('Webhook error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
