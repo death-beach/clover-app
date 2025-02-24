@@ -44,9 +44,10 @@ export async function POST(request: NextRequest) {
             total: body.data.total,
             currency: body.data.currency,
             status: 'created'
-          }]);
+          }])
+          .select(); // Add .select() to get the inserted row
 
-        if (orderError || !order || order.length === 0) {
+        if (orderError || !order || !Array.isArray(order) || order.length === 0) {
           return NextResponse.json(
             { error: orderError?.message || 'Failed to create order' },
             { status: 500 }
