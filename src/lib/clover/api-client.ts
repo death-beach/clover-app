@@ -18,7 +18,6 @@ interface CloverEmployee {
   };
 }
 
-// Map Clover API roles to our system roles
 const CLOVER_API_ROLE_MAP: Record<string, CloverRole> = {
   OWNER: CLOVER_ROLES.OWNER,
   ADMIN: CLOVER_ROLES.ADMIN,
@@ -42,7 +41,6 @@ export class CloverAPIClient {
       const response = await CloverOAuthService.refreshAccessToken(this.refreshToken);
       this.accessToken = response.access_token;
       this.refreshToken = response.refresh_token;
-      // Removed cookie setting - handle in route handler
     } catch (error) {
       console.error('Error refreshing token:', error);
       throw new Error('Failed to refresh access token');
@@ -123,8 +121,8 @@ export class CloverAPIClient {
 
 let apiClientInstance: CloverAPIClient | null = null;
 
-export function getCloverAPIClient() {
-  const cookieStore = cookies();
+export async function getCloverAPIClient() {
+  const cookieStore = await cookies(); // Await cookies
   const merchantId = cookieStore.get('clover_merchant_id')?.value;
   const accessToken = cookieStore.get('clover_access_token')?.value;
   const refreshToken = cookieStore.get('clover_refresh_token')?.value;
@@ -138,31 +136,4 @@ export function getCloverAPIClient() {
   }
 
   return apiClientInstance;
-}
-
-// Utility to set cookies in a route handler
-export async function setCloverCookies(tokens: {
-  access_token: string;
-  refresh_token: string;
-  expires_in: number;
-  merchant_id: string;
-}) {
-  const cookieStore = cookies();
-  cookieStore.set('clover_access_token', tokens.access_token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: tokens.expires_in,
-  });
-  cookieStore.set('clover_refresh_token', tokens.refresh_token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  });
-  cookieStore.set('clover_merchant_id', tokens.merchant_id, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-  });
 }
