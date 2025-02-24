@@ -25,7 +25,7 @@ async function verifyDeployment() {
 
     console.log('\n✨ Deployment verification completed successfully!');
   } catch (error) {
-    console.error('❌ Deployment verification failed:', error.message);
+    console.error('❌ Deployment verification failed:', error instanceof Error ? error.message : String(error));
     if (error.response) {
       console.error('Error details:', error.response.data);
     }
