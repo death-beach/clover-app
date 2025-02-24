@@ -19,7 +19,7 @@ export const useRealtimeSubscription = <T>(
     const subscription: RealtimeChannel = supabase
       .channel(channel)
       .on(
-        'postgres_changes' as 'postgres_changes', // Force type assertion
+        'postgres_changes' as any, // Bypass TS check
         { event: '*', schema: 'public', table },
         callback
       )
