@@ -1,3 +1,5 @@
+"use client"; // Add this at the top
+
 import { createContext, useContext } from 'react';
 
 interface ApiContextType {
