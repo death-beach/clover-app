@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
     const event = body[0];
     const txSignature = event.signature;
-    const transfers = event.tokenTransfers as TokenTransfer[];
+    const transfers = event.enriched.tokenTransfers as TokenTransfer[]; // Fixed: Use enriched.tokenTransfers
     const amount = transfers?.[0]?.amount / 1_000_000 || 0;
 
     const { rows } = await sql`
