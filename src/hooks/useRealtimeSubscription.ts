@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, RealtimeChannel } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,11 +16,11 @@ export const useRealtimeSubscription = <T>(
   useEffect(() => {
     if (!callback) return;
 
-    const subscription = supabase
+    const subscription: RealtimeChannel = supabase
       .channel(channel)
       .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: table }, // Fixed syntax
+        'postgres_changes', // No cast needed, TS should infer from docs
+        { event: '*', schema: 'public', table },
         callback
       )
       .subscribe();
