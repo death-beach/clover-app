@@ -1,8 +1,7 @@
-import { NextResponse } from 'next/server';
-import { headers } from 'next/headers';
+import { NextResponse, NextRequest } from 'next/server';
 
-export async function GET() {
-  const headersList = headers();
+export async function GET(request: NextRequest) {
+  const headersList = request.headers;
   const authHeader = headersList.get('authorization');
 
   if (!authHeader?.startsWith('Bearer ')) {
