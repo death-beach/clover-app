@@ -19,7 +19,7 @@ export const useRealtimeSubscription = <T>(
     const subscription: RealtimeChannel = supabase
       .channel(channel)
       .on(
-        'postgres_changes', // No cast needed, TS should infer from docs
+        'postgres_changes' as 'postgres_changes', // Force type assertion
         { event: '*', schema: 'public', table },
         callback
       )
