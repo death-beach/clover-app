@@ -19,9 +19,6 @@ interface PaymentLinkResponse {
     reference: string;
 }
 
-/**
- * Creates a Solana Pay payment link and QR code
- */
 export async function createPaymentLink({
     amount,
     recipient,
@@ -29,19 +26,15 @@ export async function createPaymentLink({
     message = 'Thank you for your payment',
     memo,
     reference,
-    splToken = SOLANA_PAY_CONFIG.USDC_ADDRESS,
+    splToken = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'devnet'
+        ? SOLANA_PAY_CONFIG.USDC_ADDRESS.devnet
+        : SOLANA_PAY_CONFIG.USDC_ADDRESS.mainnet, // Dynamic network selection
 }: CreatePaymentLinkParams): Promise<PaymentLinkResponse> {
     try {
-        // Validate recipient address
         const recipientPublicKey = new PublicKey(recipient);
-        
-        // Convert amount to proper decimals for USDC (6 decimals)
-        const amountBN = new BigNumber(amount).multipliedBy(1e6);
-
-        // Create unique reference if not provided
+        const amountBN = new BigNumber(amount).multipliedBy(1e6); // USDC has 6 decimals
         const paymentReference = reference || generateReference();
 
-        // Create the payment URL
         const url = encodeURL({
             recipient: recipientPublicKey,
             amount: amountBN,
@@ -52,7 +45,6 @@ export async function createPaymentLink({
             memo,
         });
 
-        // Generate QR code
         const qr = createQR(url);
         const qrCode = await qr.getRawData('svg');
 
@@ -71,26 +63,16 @@ export async function createPaymentLink({
     }
 }
 
-/**
- * Generates a unique reference for the payment
- */
 function generateReference(): string {
     return `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
 }
 
-/**
- * Validates a Solana Pay URL
- */
 export function validatePaymentURL(url: string): boolean {
     try {
         const parsedUrl = new URL(url);
-        const protocol = parsedUrl.protocol;
-
-        if (protocol !== 'solana:') {
+        if (parsedUrl.protocol !== 'solana:') {
             throw new Error('Invalid Solana Pay URL protocol');
         }
-
-        // Additional validation can be added here
         return true;
     } catch (error) {
         console.error('Error validating payment URL:', error);
@@ -98,13 +80,10 @@ export function validatePaymentURL(url: string): boolean {
     }
 }
 
-/**
- * Monitors a payment reference for completion
- */
 export async function monitorPaymentReference(
     reference: string,
     connection: Connection,
-    timeout = 60000 // 1 minute timeout
+    timeout = 60000
 ): Promise<boolean> {
     const startTime = Date.now();
     const referencePublicKey = new PublicKey(reference);
@@ -117,11 +96,9 @@ export async function monitorPaymentReference(
             );
 
             if (signatureInfo.length > 0) {
-                // Payment found
                 return true;
             }
 
-            // Wait before checking again
             await new Promise(resolve => setTimeout(resolve, 1000));
         } catch (error) {
             console.error('Error monitoring payment:', error);
@@ -129,20 +106,13 @@ export async function monitorPaymentReference(
         }
     }
 
-    // Timeout reached without finding the payment
     return false;
 }
 
-/**
- * Creates a deep link for mobile wallets
- */
 export function createMobileDeepLink(paymentUrl: string): string {
-    // List of supported wallet URLs
     const walletUrls = {
         phantom: 'https://phantom.app/ul/browse/',
         solflare: 'https://solflare.com/ul/',
     };
-
-    // Default to Phantom
     return `${walletUrls.phantom}${encodeURIComponent(paymentUrl)}`;
 }
