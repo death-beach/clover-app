@@ -2,7 +2,7 @@ declare namespace NodeJS {
   interface ProcessEnv {
     // Auth
     PRIVY_APP_ID: string;
-    CLOVER_CLIENT_ID: string;
+    CLOVER_API_KEY: string;
     CLOVER_CLIENT_SECRET: string;
     
     // Solana

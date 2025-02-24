@@ -26,7 +26,7 @@ const configSchema = z.object({
 export const config = configSchema.parse({
   // Auth
   privyAppId: process.env.PRIVY_APP_ID,
-  cloverClientId: process.env.CLOVER_CLIENT_ID,
+  cloverClientId: process.env.CLOVER_API_KEY,
   cloverClientSecret: process.env.CLOVER_CLIENT_SECRET,
   
   // Solana

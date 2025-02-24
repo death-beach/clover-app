@@ -13,12 +13,18 @@ export async function GET(request) {
     console.log('Privy Address:', privyAddress);
     console.log('Cookie Header:', cookieHeader);
 
-    const supabase = createClient(
-      process.env.SUPABASE_URL || '',
-      process.env.SUPABASE_ANON_KEY || ''
-    );
+    // Clear stale Clover cookies on Privy login
+    if (privyAddress && cloverToken) {
+      cookieStore.delete('clover_access_token');
+      cookieStore.delete('clover_merchant_id');
+      cookieStore.delete('clover_refresh_token');
+    }
 
-    if (privyAddress && !cloverToken) { // First login onboarding
+    if (privyAddress) { // First login onboarding
+      const supabase = createClient(
+        process.env.SUPABASE_URL || '',
+        process.env.SUPABASE_ANON_KEY || ''
+      );
       const { data: merchant } = await supabase
         .from('merchants')
         .select('clover_merchant_id')
@@ -30,23 +36,6 @@ export async function GET(request) {
         session: { 
           address: privyAddress,
           merchantId: merchant?.clover_merchant_id || 'pending'
-        }
-      });
-    }
-
-    if (cloverToken) { // Post-onboarding Clover login
-      const { data: merchant } = await supabase
-        .from('merchants')
-        .select('wallet_address')
-        .eq('clover_merchant_id', 'ACCC25YXXABZ1')
-        .single();
-
-      return NextResponse.json({
-        type: 'clover',
-        session: { 
-          accessToken: cloverToken, 
-          merchantId: 'ACCC25YXXABZ1',
-          walletAddress: merchant?.wallet_address
         }
       });
     }
