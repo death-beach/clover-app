@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { cookies } from 'next/headers';
 import { getCloverAPIClient } from '@/lib/clover/api-client';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const merchantId = request.cookies.get('clover_merchant_id')?.value;
-    const employeeId = request.cookies.get('clover_employee_id')?.value;
+    const cookieStore = await cookies();
+    const merchantId = cookieStore.get('clover_merchant_id')?.value;
+    const employeeId = cookieStore.get('clover_employee_id')?.value;
 
     if (!merchantId || !employeeId) {
       return NextResponse.json(
@@ -14,22 +15,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const apiClient = getCloverAPIClient(merchantId);
+    const apiClient = getCloverAPIClient(); // No merchantId here
     const employee = await apiClient.getCurrentEmployee(employeeId);
 
     return NextResponse.json(employee);
   } catch (error) {
-    console.error('Error fetching Clover employee:', error);
-    
-    if ((error as any).status === 401) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
+    console.error('Error fetching current employee:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch employee data' },
+      { error: 'Failed to fetch employee' },
       { status: 500 }
     );
   }
