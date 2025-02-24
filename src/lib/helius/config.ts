@@ -1,9 +1,3 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { WebhookPayload, TokenTransfer } from './types'; // Move WebhookType here
-import { USDC_MINT } from '@/config/tokens';
-import { createClient } from '@supabase/supabase-js';
-
-// Rest of your code...
 export interface HeliusConfig {
   apiKey: string;
   rpcEndpoint: string;
