@@ -1,49 +1,70 @@
-import { helioApi } from '@/config/helio-sdk';
+import { createPaymentLink } from '@/lib/solana-pay/createPaymentLink';
+import { supabase } from '@/lib/db/supabase';
 
-export interface HelioPaymentIntent {
-  id: string;
+// Create a payment intent (now a Solana Pay link)
+export async function createPaymentIntent({
+  amount,
+  recipient,
+  merchantId,
+}: {
   amount: number;
-  currency: string;
-  status: string;
-  paymentLink: string;
-}
-
-export async function createPaymentIntent(amount: number, currency: string = 'USD') {
+  recipient: string;
+  merchantId: string;
+}) {
   try {
-    const response = await helioApi.post('/payment-intents', {
+    const { url, reference } = await createPaymentLink({
       amount,
-      currency,
-      // Add any additional parameters required by Helio
+      recipient,
+      memo: `Payment for merchant ${merchantId}`,
     });
 
-    return response.data;
+    // Store in Supabase
+    const { data, error } = await supabase
+      .from('transactions')
+      .insert({
+        merchant_id: merchantId,
+        amount_usdc: amount,
+        status: 'pending',
+        solana_reference: reference,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return { paymentIntentId: data.transaction_id, url };
   } catch (error) {
     console.error('Error creating payment intent:', error);
     throw error;
   }
 }
 
-export async function getPaymentStatus(paymentIntentId: string) {
+// Fetch a payment intent status
+export async function getPaymentIntent(paymentIntentId: string) {
   try {
-    const response = await helioApi.get(`/payment-intents/${paymentIntentId}`);
-    return response.data;
+    const { data, error } = await supabase
+      .from('transactions')
+      .select('*')
+      .eq('transaction_id', paymentIntentId)
+      .single();
+
+    if (error) throw error;
+
+    return data;
   } catch (error) {
-    console.error('Error getting payment status:', error);
+    console.error('Error fetching payment intent:', error);
     throw error;
   }
 }
 
-export async function initiateOffRamp(amount: number, currency: string = 'USD') {
+// Stub for off-ramp (remove or implement later)
+export async function createOffRamp({ amount, merchantId }: { amount: number; merchantId: string }) {
   try {
-    const response = await helioApi.post('/off-ramp', {
-      amount,
-      currency,
-      // Add any additional parameters required by Helio
-    });
-
-    return response.data;
+    // Placeholder - no Helio, implement with Solana Pay or another service later
+    console.log('Off-ramp not implemented yet', { amount, merchantId });
+    return { status: 'pending' };
   } catch (error) {
-    console.error('Error initiating off-ramp:', error);
+    console.error('Error creating off-ramp:', error);
     throw error;
   }
 }
