@@ -1,33 +1,31 @@
-import { useState, useCallback } from 'react'
-import { useApiContext } from '@/contexts/api/ApiContext'
+import { useState, useCallback } from 'react';
+import { useApiContext } from '@/contexts/api/ApiContext';
 
 export const useApiRequest = <T,>(endpoint: string) => {
-  const { request } = useApiContext()
-  const [data, setData] = useState<T | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<Error | null>(null)
+  const { request } = useApiContext();
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetch = useCallback(async (
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' = 'GET', 
-    body?: any
-  ) => {
-    setIsLoading(true)
-    setError(null)
-
+  const fetchData = useCallback(async (method = 'GET', body?: any) => {
+    setLoading(true);
     try {
-      const result = await request<T>(endpoint, method, body)
-      setData(result)
-      return result
+      const options: RequestInit = { method }; // Set method in options
+      if (body) {
+        options.body = JSON.stringify(body);
+        options.headers = { 'Content-Type': 'application/json' };
+      }
+      const result = await request<T>(endpoint, options); // Only 2 args
+      setData(result);
+      setError(null);
+      return result;
     } catch (err) {
-      const error = err instanceof Error 
-        ? err 
-        : new Error('An unknown error occurred')
-      setError(error)
-      throw error
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      return null;
     } finally {
-      setIsLoading(false)
+      setLoading(false);
     }
-  }, [endpoint, request])
+  }, [endpoint, request]);
 
-  return { data, isLoading, error, fetch }
-}
+  return { data, loading, error, fetchData };
+};
