@@ -11,7 +11,7 @@ export async function validateCloverSession(request: NextRequest) {
   }
 
   try {
-    const apiClient = getCloverAPIClient(merchantId);
+    const apiClient = await getCloverAPIClient(); // Made async, no merchantId arg
     return await apiClient.validateSession();
   } catch (error) {
     console.error('Error validating Clover session:', error);
@@ -20,7 +20,6 @@ export async function validateCloverSession(request: NextRequest) {
 }
 
 export function handleUnauthorized() {
-  // Clear invalid session cookies
   const response = NextResponse.redirect(new URL('/auth/login', process.env.NEXTAUTH_URL));
   response.cookies.delete('clover_session');
   response.cookies.delete('clover_merchant_id');

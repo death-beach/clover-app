@@ -15,7 +15,7 @@ export async function GET() {
       );
     }
 
-    const apiClient = getCloverAPIClient(); // No merchantId here
+    const apiClient = await getCloverAPIClient(); // Added await
     const employee = await apiClient.getCurrentEmployee(employeeId);
 
     return NextResponse.json(employee);
