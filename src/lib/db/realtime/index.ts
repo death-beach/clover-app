@@ -23,15 +23,16 @@ interface Merchant {
   [key: string]: any;
 }
 
-type TransactionChanges = RealtimePostgresChangesPayload<Transaction>;
-type TransferChanges = RealtimePostgresChangesPayload<Transfer>;
-type MerchantChanges = RealtimePostgresChangesPayload<Merchant>;
+// Use stricter typing to exclude {}
+type TransactionChanges = RealtimePostgresChangesPayload<Transaction> & { new: Transaction; old?: Transaction };
+type TransferChanges = RealtimePostgresChangesPayload<Transfer> & { new: Transfer; old?: Transfer };
+type MerchantChanges = RealtimePostgresChangesPayload<Merchant> & { new: Merchant; old: Merchant };
 
 export const setupRealtimeSubscriptions = () => {
   const transactionSubscription = supabase
     .channel('transaction-changes')
     .on(
-      'postgres_changes' as any, // Keep as any for now
+      'postgres_changes' as any,
       {
         event: '*',
         schema: 'public',
@@ -44,10 +45,10 @@ export const setupRealtimeSubscriptions = () => {
             console.log('New transaction:', newRecord);
             break;
           case 'UPDATE':
-            if (newRecord.status !== oldRecord.status) {
+            if (newRecord.status !== oldRecord?.status) {
               console.log('Transaction status changed:', {
                 id: newRecord.transaction_id,
-                oldStatus: oldRecord.status,
+                oldStatus: oldRecord?.status,
                 newStatus: newRecord.status,
               });
             }
@@ -73,10 +74,10 @@ export const setupRealtimeSubscriptions = () => {
             console.log('New transfer initiated:', newRecord);
             break;
           case 'UPDATE':
-            if (newRecord.status !== oldRecord.status) {
+            if (newRecord.status !== oldRecord?.status) {
               console.log('Transfer status changed:', {
                 id: newRecord.transfer_id,
-                oldStatus: oldRecord.status,
+                oldStatus: oldRecord?.status,
                 newStatus: newRecord.status,
               });
             }
