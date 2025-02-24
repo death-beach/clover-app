@@ -1,43 +1,30 @@
-import { useEffect } from 'react'
-import { RealtimeChannel } from '@supabase/supabase-js'
-import {
-  subscribeToTransactions,
-  subscribeToTransfers,
-  subscribeToMerchantKYC,
-} from '@/lib/db/realtime'
+'use client';
 
-type SubscriptionType = 'transactions' | 'transfers' | 'kyc'
+import { useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
-export const useRealtimeSubscription = (
-  type: SubscriptionType,
-  merchantId?: string,
-  callback?: (data: any) => void
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+export const useRealtimeSubscription = <T>(
+  channel: string,
+  table: string,
+  callback?: (payload: T) => void
 ) => {
   useEffect(() => {
-    let subscription: RealtimeChannel
+    if (!callback) return;
 
-    switch (type) {
-      case 'transactions':
-        subscription = subscribeToTransactions(merchantId)
-        break
-      case 'transfers':
-        subscription = subscribeToTransfers(merchantId)
-        break
-      case 'kyc':
-        if (!merchantId) {
-          console.error('merchantId is required for KYC subscription')
-          return
-        }
-        subscription = subscribeToMerchantKYC(merchantId)
-        break
-    }
-
-    if (callback) {
-      subscription.on('data', callback)
-    }
+    const subscription = supabase
+      .channel(channel)
+      .on('postgres_changes', { event: '*', schema: 'public', table }, callback) // Fixed: 3 args
+      .subscribe();
 
     return () => {
-      subscription.unsubscribe()
-    }
-  }, [type, merchantId, callback])
-}
+      supabase.removeChannel(subscription);
+    };
+  }, [channel, table, callback]);
+
+  return null;
+};
