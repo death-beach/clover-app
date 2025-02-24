@@ -10,12 +10,12 @@ interface CreatePaymentLinkParams {
     message?: string;
     memo?: string;
     reference?: string;
-    splToken?: string; // USDC address
+    splToken?: string;
 }
 
 interface PaymentLinkResponse {
     url: string;
-    qrCode: string;
+    qrCode: string; // Still string in response type
     reference: string;
 }
 
@@ -28,11 +28,11 @@ export async function createPaymentLink({
     reference,
     splToken = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'devnet'
         ? SOLANA_PAY_CONFIG.USDC_ADDRESS.devnet
-        : SOLANA_PAY_CONFIG.USDC_ADDRESS.mainnet, // Dynamic network selection
+        : SOLANA_PAY_CONFIG.USDC_ADDRESS.mainnet,
 }: CreatePaymentLinkParams): Promise<PaymentLinkResponse> {
     try {
         const recipientPublicKey = new PublicKey(recipient);
-        const amountBN = new BigNumber(amount).multipliedBy(1e6); // USDC has 6 decimals
+        const amountBN = new BigNumber(amount).multipliedBy(1e6);
         const paymentReference = reference || generateReference();
 
         const url = encodeURL({
@@ -46,11 +46,11 @@ export async function createPaymentLink({
         });
 
         const qr = createQR(url);
-        const qrCode = await qr.getRawData('svg');
-
-        if (!qrCode) {
+        const qrBlob = await qr.getRawData('svg');
+        if (!qrBlob) {
             throw new Error('Failed to generate QR code');
         }
+        const qrCode = await qrBlob.text(); // Convert Blob to string
 
         return {
             url: url.toString(),
