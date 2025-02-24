@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
     const event = body[0];
     const txSignature = event.signature;
-    const transfers = event.enriched.tokenTransfers as TokenTransfer[]; // Fixed: Use enriched.tokenTransfers
+    const transfers = event.enriched.tokenTransfers as TokenTransfer[];
     const amount = transfers?.[0]?.amount / 1_000_000 || 0;
 
     const { rows } = await sql`
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       SET 
         status = 'confirmed',
         solana_signature = ${txSignature}
-      WHERE transaction_id = ${event.reference || transfers?.[0]?.reference}
+      WHERE solana_signature = ${txSignature}  -- Use signature as identifier
       RETURNING *
     `;
     const transaction = rows[0];
