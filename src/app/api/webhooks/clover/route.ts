@@ -62,9 +62,9 @@ export async function POST(request: NextRequest) {
           .eq('order_id', body.data.id)
           .select();
 
-        if (paymentError) {
+        if (paymentError || !payment || payment.length === 0) {
           return NextResponse.json(
-            { error: paymentError.message },
+            { error: paymentError?.message || 'Payment not found' },
             { status: 500 }
           );
         }
