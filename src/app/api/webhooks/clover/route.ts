@@ -46,9 +46,9 @@ export async function POST(request: NextRequest) {
             status: 'created'
           }]);
 
-        if (orderError) {
+        if (orderError || !order || order.length === 0) {
           return NextResponse.json(
-            { error: orderError.message },
+            { error: orderError?.message || 'Failed to create order' },
             { status: 500 }
           );
         }
