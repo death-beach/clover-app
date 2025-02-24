@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@vercel/postgres';
 import { config } from '@/config';
+import { WebhookPayload, TokenTransfer } from '@/lib/helius/types';
 
 export async function POST(req: NextRequest) {
   try {
-    // 1. Verify webhook signature
     const signature = req.headers.get('x-signature');
     if (!signature) {
       return NextResponse.json(
@@ -13,21 +13,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // TODO: Implement signature verification
+    const body = await req.json() as WebhookPayload[];
+    if (!body || !Array.isArray(body) || body.length === 0) {
+      return NextResponse.json(
+        { error: 'Invalid webhook payload' },
+        { status: 400 }
+      );
+    }
 
-    // 2. Parse webhook payload
-    const body = await req.json();
-    const { signature: txSignature, accountKeys, amount } = body;
+    const event = body[0];
+    const txSignature = event.signature;
+    const transfers = event.tokenTransfers as TokenTransfer[];
+    const amount = transfers?.[0]?.amount / 1_000_000 || 0;
 
-    // 3. Update transaction status
-    const [transaction] = await sql`
+    const { rows } = await sql`
       UPDATE transactions
       SET 
         status = 'confirmed',
         solana_signature = ${txSignature}
-      WHERE transaction_id = ${body.reference}
+      WHERE transaction_id = ${event.reference || transfers?.[0]?.reference}
       RETURNING *
     `;
+    const transaction = rows[0];
 
     if (!transaction) {
       return NextResponse.json(
@@ -36,14 +43,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 4. Get merchant details
-    const [merchant] = await sql`
+    const { rows: merchantRows } = await sql`
       SELECT * FROM merchants
       WHERE merchant_id = ${transaction.merchant_id}
     `;
-
-    // 5. Trigger off-ramp if auto-enabled
-    // TODO: Implement Helio off-ramp integration
+    const merchant = merchantRows[0];
 
     return NextResponse.json({ success: true });
   } catch (error) {
