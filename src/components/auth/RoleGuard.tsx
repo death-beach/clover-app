@@ -1,28 +1,27 @@
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { CloverRole } from '@/config/clover-roles';
 
 interface RoleGuardProps {
   children: React.ReactNode;
-  allowedRoles: CloverRole[];
+  allowedRoles: string[];
 }
 
 const RoleGuard: React.FC<RoleGuardProps> = ({ children, allowedRoles }) => {
   const router = useRouter();
-  const { userRole, isLoading } = useAuth();
+  const { role, isLoading } = useAuth(); // Changed from userRole to role
 
   useEffect(() => {
-    if (!isLoading && userRole && !allowedRoles.includes(userRole)) {
-      router.push('/dashboard');
+    if (!isLoading && role && !allowedRoles.includes(role)) {
+      router.push('/unauthorized');
     }
-  }, [userRole, isLoading, router, allowedRoles]);
+  }, [isLoading, role, allowedRoles, router]);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  return userRole && allowedRoles.includes(userRole) ? <>{children}</> : null;
+  return <>{children}</>;
 };
 
 export default RoleGuard;
