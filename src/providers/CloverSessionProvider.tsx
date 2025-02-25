@@ -3,11 +3,20 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { type CloverRole } from '@/config/clover-roles';
+
+interface CloverEmployeeData {
+  id: string;
+  name: string;
+  role: CloverRole;
+  merchantId: string;
+}
+
 interface CloverSession {
   merchantId: string | null;
   employeeId: string | null;
-  role: string | null;
-  employee: any | null; // Add this - stub for now
+  role: CloverRole | null;
+  employee: CloverEmployeeData | null;
   isAuthenticated: boolean;
 }
 

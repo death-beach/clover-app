@@ -4,6 +4,12 @@ import { BlockchainCache } from '@/lib/blockchain/cache';
 import { RateLimiter } from '@/lib/blockchain/rateLimiter';
 import { logger } from '@/lib/logger';
 
+interface TokenAccount {
+  mint: string;
+  amount: string;
+  decimals: number;
+}
+
 // Initialize cache and rate limiter
 const cache = new BlockchainCache();
 const rateLimiter = new RateLimiter(1000, 50); // 50 requests per second
@@ -74,32 +80,31 @@ export class BlockchainUtils {
     }
   }
 
-  async getTokenAccounts(owner: string): Promise<any[]> {
+  async getTokenAccounts(owner: string): Promise<TokenAccount[]> {
     const cacheKey = `tokens:${owner}`;
-    const cachedAccounts = cache.get<any[]>(cacheKey);
+    const cachedAccounts = cache.get<TokenAccount[]>(cacheKey);
     
     if (cachedAccounts) {
-      logger.debug('Cache hit for token accounts', { owner });
       return cachedAccounts;
     }
 
     await rateLimiter.acquire();
 
     try {
-      const accounts = await withRetry(async () => {
-        return await this.connection.getParsedTokenAccountsByOwner(
+      const accounts = await withRetry(async () => 
+        this.connection.getParsedTokenAccountsByOwner(
           new PublicKey(owner),
           { programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA') }
-        );
-      });
+        )
+      );
 
-      const parsedAccounts = accounts.value.map(account => ({
+      const parsedAccounts: TokenAccount[] = accounts.value.map(account => ({
         mint: account.account.data.parsed.info.mint,
         amount: account.account.data.parsed.info.tokenAmount.amount,
         decimals: account.account.data.parsed.info.tokenAmount.decimals,
       }));
 
-      cache.set(cacheKey, parsedAccounts, { ttl: 60 * 1000 }); // Cache for 1 minute
+      cache.set(cacheKey, parsedAccounts, { ttl: 60 * 1000 });
       return parsedAccounts;
     } catch (error) {
       logger.error('Failed to fetch token accounts', {
