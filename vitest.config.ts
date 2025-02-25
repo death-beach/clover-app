@@ -13,10 +13,6 @@ export default defineConfig({
         'node_modules/',
         'src/test/setup.ts',
       ],
-      outputFile: {
-        json: './coverage/coverage.json',
-        html: './coverage/html'
-      },
       reportsDirectory: './coverage'
     },
     outputFile: './coverage/test-results.json'
