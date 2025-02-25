@@ -26,8 +26,8 @@ export function PrivyProvider({ children }: { children: React.ReactNode }) {
           theme: 'light',
           accentColor: '#4F46E5',
           logo: '/logo.png',
-          walletChainType: 'solana-only', // Ensures Solana wallets
-          walletList: ['phantom', 'solflare'], // Back to your original list
+          walletChainType: 'solana-only', // Enforces Solana for external wallets
+          walletList: ['detected_wallets'], // Detects Phantom, Solflare, etc.
         },
         externalWallets: {
           solana: {
@@ -35,7 +35,8 @@ export function PrivyProvider({ children }: { children: React.ReactNode }) {
           },
         },
         embeddedWallets: {
-          createOnLogin: 'users-without-wallets', // No defaultChain needed
+          createOnLogin: 'users-without-wallets',
+          defaultChain: process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'devnet' ? 'solana-devnet' : 'solana-mainnet', // Explicit chain
         },
         onSuccess: handleLogin,
         onError: (error: unknown) => {
