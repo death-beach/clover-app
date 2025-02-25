@@ -26,8 +26,8 @@ export function PrivyProvider({ children }: { children: React.ReactNode }) {
           theme: 'light',
           accentColor: '#4F46E5',
           logo: '/logo.png',
-          walletChainType: 'solana-only',
-          walletList: ['detected_wallets'], // Simplified to detect all Solana wallets
+          walletChainType: 'solana-only', // Ensures Solana wallets
+          walletList: ['phantom', 'solflare'], // Back to your original list
         },
         externalWallets: {
           solana: {
@@ -35,11 +35,10 @@ export function PrivyProvider({ children }: { children: React.ReactNode }) {
           },
         },
         embeddedWallets: {
-          createOnLogin: 'users-without-wallets', // Fixed typo: removed enabled
-          defaultChain: 'solana',
+          createOnLogin: 'users-without-wallets', // No defaultChain needed
         },
         onSuccess: handleLogin,
-        onError: (error: unknown) => { // Typed error
+        onError: (error: unknown) => {
           console.error('Privy authentication error:', error);
         },
       }}
