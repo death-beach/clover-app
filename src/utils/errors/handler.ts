@@ -7,13 +7,16 @@ interface ErrorResponse {
 }
 
 // Function to log errors (can be expanded to use proper logging service)
-const logError = (error: Error, context?: Record<string, unknown>) => {
+const logError = (error: unknown, context?: Record<string, unknown>) => {
+  // Type guard to safely access Error properties
+  const errorObj = error instanceof Error ? error : new Error(String(error));
+  
   // In development, log to console
   if (process.env.NODE_ENV === 'development') {
     console.error('Error:', {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
+      name: errorObj.name,
+      message: errorObj.message,
+      stack: errorObj.stack,
       context,
     });
   }
