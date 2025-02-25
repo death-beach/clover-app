@@ -6,7 +6,11 @@ import { usePrivy } from '@privy-io/react-auth';
 const DashboardNav = () => {
   const { logout } = usePrivy();
   const { role, user } = useAuth();
-  const merchantName = user?.name || 'Merchant Dashboard';
+  // Check for name property in different ways depending on the user type
+  const merchantName = 
+    (user && 'name' in user) ? user.name : 
+    (user as any)?.email?.address || 
+    'Merchant Dashboard';
 
   const navItems = [
     {
