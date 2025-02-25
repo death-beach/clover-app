@@ -1,3 +1,11 @@
+export enum WebhookType {
+  ENHANCED_TRANSACTION = 'ENHANCED_TRANSACTION',
+  TOKEN_TRANSFER = 'TOKEN_TRANSFER',
+  NFT_EVENT = 'NFT_EVENT',
+  FUNGIBLE_TOKEN_MINT = 'FUNGIBLE_TOKEN_MINT',
+  TRANSACTION = 'TRANSACTION'
+}
+
 export interface HeliusConfig {
   apiKey: string;
   rpcEndpoint: string;
