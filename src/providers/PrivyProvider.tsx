@@ -4,11 +4,13 @@ import { PrivyProvider as BasePrivyProvider } from '@privy-io/react-auth';
 import { toSolanaWalletConnectors } from '@privy-io/react-auth/solana';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
+import { type PrivyUser } from '@/types/auth/user';
 
 export function PrivyProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
-  const handleLogin = useCallback((user: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleLogin = useCallback((user: PrivyUser) => {
     console.log('User logged in:', JSON.stringify(user, null, 2));
     router.push('/dashboard');
   }, [router]);

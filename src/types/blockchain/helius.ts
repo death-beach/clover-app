@@ -8,6 +8,12 @@ export interface TokenTransfer {
   tokenStandard: string;
 }
 
+export interface NativeTransfer {
+  fromUserAccount: string;
+  toUserAccount: string;
+  amount: number;
+}
+
 export interface AccountData {
   account: string;
   nativeBalanceChange: number;
@@ -52,7 +58,7 @@ export type WebhookData = {
   fee: number;
   timestamp: number;
   slot: number;
-  nativeTransfers: any[];
+  nativeTransfers: NativeTransfer[];
   tokenTransfers: TokenTransfer[];
 }
 

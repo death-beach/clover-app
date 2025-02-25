@@ -25,15 +25,16 @@ export interface PrivyUser {
   createdAt?: string
 }
 
-export function isPrivyUser(user: any): user is PrivyUser {
+export function isPrivyUser(user: unknown): user is PrivyUser {
   return (
     typeof user === 'object' &&
     user !== null &&
-    typeof user.id === 'string' &&
-    (!user.email || (
-      typeof user.email === 'object' &&
-      typeof user.email.address === 'string' &&
-      typeof user.email.verified === 'boolean'
+    typeof (user as PrivyUser).id === 'string' &&
+    (!(user as PrivyUser).email || (
+      typeof (user as PrivyUser).email === 'object' &&
+      (user as PrivyUser).email !== null &&
+      typeof ((user as PrivyUser).email?.address) === 'string' &&
+      typeof ((user as PrivyUser).email?.verified) === 'boolean'
     ))
   )
 }

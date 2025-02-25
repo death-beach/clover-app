@@ -1,5 +1,5 @@
 export class NextResponse {
-  static json(data: any, init?: ResponseInit) {
+  static json<T>(data: T, init?: ResponseInit) {
     return new Response(JSON.stringify(data), {
       ...init,
       headers: {
