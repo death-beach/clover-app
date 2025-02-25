@@ -35,15 +35,8 @@ export function PrivyProvider({ children }: { children: React.ReactNode }) {
           },
         },
         embeddedWallets: {
-          createOnLogin: 'users-without-wallets',
-          solana: {
-            createOnLogin: 'users-without-wallets'
-          }
-        },
-        onSuccess: handleLogin,
-        onError: (error: unknown) => {
-          console.error('Privy authentication error:', error);
-        },
+          createOnLogin: 'users-without-wallets'
+        }
       }}
     >
       {children}
