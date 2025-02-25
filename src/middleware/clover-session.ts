@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
+
 import { getCloverAPIClient } from '@/lib/clover/api-client';
 
 export async function validateCloverSession(request: NextRequest) {

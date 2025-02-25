@@ -1,7 +1,9 @@
-import { useAuth } from '@/hooks/useAuth';
-import { CLOVER_ROLES } from '@/config/clover-roles';
-import Link from 'next/link';
 import { usePrivy } from '@privy-io/react-auth';
+import Link from 'next/link';
+
+import { CLOVER_ROLES } from '@/config/clover-roles';
+import { useAuth } from '@/hooks/useAuth';
+import { type PrivyUser } from '@/types/auth/user';
 
 const DashboardNav = () => {
   const { logout } = usePrivy();
@@ -9,7 +11,7 @@ const DashboardNav = () => {
   // Check for name property in different ways depending on the user type
   const merchantName = 
     (user && 'name' in user) ? user.name : 
-    (user as any)?.email?.address || 
+    ((user as PrivyUser)?.email?.address) || 
     'Merchant Dashboard';
 
   const navItems = [
