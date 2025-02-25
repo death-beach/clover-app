@@ -3,11 +3,11 @@ import { PaymentError, NetworkError, ValidationError, AuthenticationError } from
 interface ErrorResponse {
   message: string;
   code?: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 // Function to log errors (can be expanded to use proper logging service)
-const logError = (error: Error, context?: any) => {
+const logError = (error: Error, context?: Record<string, unknown>) => {
   // In development, log to console
   if (process.env.NODE_ENV === 'development') {
     console.error('Error:', {
@@ -24,7 +24,7 @@ const logError = (error: Error, context?: any) => {
 };
 
 // Main error handler function
-export const handleError = (error: any): ErrorResponse => {
+export const handleError = (error: unknown): ErrorResponse => {
   logError(error);
 
   if (error instanceof PaymentError) {

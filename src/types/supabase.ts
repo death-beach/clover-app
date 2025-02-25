@@ -1,4 +1,4 @@
-import { TransactionStatus } from './transactions';
+import type { TransactionStatus } from './transactions';
 
 export type Json =
   | string

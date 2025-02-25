@@ -5,7 +5,7 @@ export class PaymentError extends Error {
     message: string,
     public code: string,
     public status?: number,
-    public details?: any
+    public details?: Record<string, unknown>
   ) {
     super(message);
     this.name = 'PaymentError';
@@ -16,7 +16,7 @@ export class ValidationError extends Error {
   constructor(
     message: string,
     public field?: string,
-    public details?: any
+    public details?: Record<string, unknown>
   ) {
     super(message);
     this.name = 'ValidationError';
@@ -27,7 +27,7 @@ export class NetworkError extends Error {
   constructor(
     message: string,
     public status?: number,
-    public details?: any
+    public details?: Record<string, unknown>
   ) {
     super(message);
     this.name = 'NetworkError';
