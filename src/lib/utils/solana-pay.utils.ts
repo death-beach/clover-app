@@ -1,6 +1,7 @@
 import { Connection, PublicKey } from '@solana/web3.js';
-import { SOLANA_PAY_CONFIG, SOLANA_PAY_ERRORS, VALIDATION_RULES } from '../../config/solana-pay.config';
 import BigNumber from 'bignumber.js';
+
+import { SOLANA_PAY_CONFIG, SOLANA_PAY_ERRORS, VALIDATION_RULES } from '../../config/solana-pay.config';
 
 /**
  * Validates payment amount
@@ -107,7 +108,7 @@ export function getWalletDeepLink(paymentUrl: string): string {
 /**
  * Formats error message for user display
  */
-export function formatErrorMessage(error: any): string {
+export function formatErrorMessage(error: unknown): string {
     if (error instanceof Error) {
         return error.message;
     }
