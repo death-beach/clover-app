@@ -1,13 +1,21 @@
 "use client";
 
+// builtin
 import { useCallback } from 'react';
 
+// external
 import { PrivyProvider as BasePrivyProvider } from '@privy-io/react-auth';
-import { toSolanaWalletConnectors } from '@privy-io/react-auth/solana';
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { clusterApiUrl } from '@solana/web3.js';
 
+// internal
 import { useRouter } from 'next/navigation';
 
 import { type PrivyUser } from '@/types/auth/user';
+
+const solanaNetwork = clusterApiUrl('mainnet-beta'); // Or 'devnet' if testing
+const wallets = [new PhantomWalletAdapter()]; // Add more Solana wallets if needed
 
 export function PrivyProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -18,10 +26,6 @@ export function PrivyProvider({ children }: { children: React.ReactNode }) {
     router.push('/dashboard');
   }, [router]);
 
-  const solanaConnectors = toSolanaWalletConnectors({
-    shouldAutoConnect: true,
-  });
-
   return (
     <BasePrivyProvider
       appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID as string}
@@ -31,20 +35,18 @@ export function PrivyProvider({ children }: { children: React.ReactNode }) {
           theme: 'light',
           accentColor: '#4F46E5',
           logo: '/logo.png',
-          walletChainType: 'solana-only', // Still helps external wallets
-          walletList: ['detected_wallets'], // Phantom, Solflare, etc.
-        },
-        externalWallets: {
-          solana: {
-            connectors: solanaConnectors,
-          },
+          // Add this to control which wallets are shown
+          walletList: ['phantom'],
         },
         embeddedWallets: {
-          createOnLogin: 'users-without-wallets'
-        }
+          createOnLogin: 'users-without-wallets',
+        },
       }}
     >
-      {children}
+      <ConnectionProvider endpoint={solanaNetwork}>
+        <WalletProvider wallets={wallets} autoConnect>
+          {children}
+        </WalletProvider>
+      </ConnectionProvider>
     </BasePrivyProvider>
-  );
-}
+  );}
