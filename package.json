@@ -14,12 +14,12 @@
     "test:ci": "vitest run --coverage --reporter=json --outputFile=./coverage/test-results.json"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
     "@privy-io/react-auth": "^1.73.0",
     "@solana/pay": "^0.2.5",
     "@solana/web3.js": "^1.95.2",
-    "@supabase/supabase-js": "^2.48.1",
+    "@supabase/supabase-js": "^2.49.1",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
     "@vercel/postgres": "^0.8.0",
     "axios": "^1.7.2",
     "next": "15.1.7",

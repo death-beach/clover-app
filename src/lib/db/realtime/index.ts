@@ -1,4 +1,4 @@
-import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+import type { RealtimePostgresChangesPayload, RealtimeChannel } from '@supabase/supabase-js';
 
 import { supabase } from '../supabase';
 
@@ -23,7 +23,6 @@ interface Merchant {
   [key: string]: unknown;
 }
 
-// Use stricter typing to exclude {}
 type TransactionChanges = RealtimePostgresChangesPayload<Transaction> & { new: Transaction; old?: Transaction };
 type TransferChanges = RealtimePostgresChangesPayload<Transfer> & { new: Transfer; old?: Transfer };
 type MerchantChanges = RealtimePostgresChangesPayload<Merchant> & { new: Merchant; old?: Merchant };
@@ -31,14 +30,14 @@ type MerchantChanges = RealtimePostgresChangesPayload<Merchant> & { new: Merchan
 export const setupRealtimeSubscriptions = () => {
   const transactionSubscription = supabase
     .channel('transaction-changes')
-    .on<Transaction>(
+    .on(
       'postgres_changes',
       {
         event: '*',
         schema: 'public',
         table: 'transactions',
       },
-      (payload: TransactionChanges) => { // Removed async since it's not needed here
+      (payload: TransactionChanges) => {
         const { new: newRecord, old: oldRecord, eventType } = payload;
         switch (eventType) {
           case 'INSERT':
@@ -60,7 +59,7 @@ export const setupRealtimeSubscriptions = () => {
 
   const transferSubscription = supabase
     .channel('transfer-changes')
-    .on<Transfer>(
+    .on(
       'postgres_changes',
       {
         event: '*',
@@ -89,13 +88,13 @@ export const setupRealtimeSubscriptions = () => {
 
   const merchantSubscription = supabase
     .channel('merchant-changes')
-    .on<Merchant>(
+    .on(
       'postgres_changes',
       {
         event: 'UPDATE',
         schema: 'public',
         table: 'merchants',
-        filter: 'kyc_status=neq.previous:kyc_status', // Verify this filter syntax with Supabase docs
+        filter: 'kyc_status=neq.previous:kyc_status',
       },
       (payload: MerchantChanges) => {
         const { new: newRecord, old: oldRecord } = payload;
@@ -119,7 +118,7 @@ export const subscribeToTransactions = (merchantId?: string) => {
   const filter = merchantId ? { filter: `merchant_id=eq.${merchantId}` } : {};
   return supabase
     .channel('transaction-updates')
-    .on<Transaction>(
+    .on(
       'postgres_changes',
       {
         event: '*',
@@ -139,7 +138,7 @@ export const subscribeToTransfers = (merchantId?: string) => {
   const filter = merchantId ? { filter: `merchant_id=eq.${merchantId}` } : {};
   return supabase
     .channel('transfer-updates')
-    .on<Transfer>(
+    .on(
       'postgres_changes',
       {
         event: '*',
@@ -158,7 +157,7 @@ export const subscribeToTransfers = (merchantId?: string) => {
 export const subscribeToMerchantKYC = (merchantId: string) => {
   return supabase
     .channel('kyc-updates')
-    .on<Merchant>(
+    .on(
       'postgres_changes',
       {
         event: 'UPDATE',
