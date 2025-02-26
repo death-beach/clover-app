@@ -31,7 +31,7 @@ type MerchantChanges = RealtimePostgresChangesPayload<Merchant & Record<string, 
 export const setupRealtimeSubscriptions = () => {
   const transactionSubscription = supabase
     .channel('transaction-changes')
-    // @ts-ignore: Force TypeScript to accept 'postgres_changes'
+    // @ts-expect-error: TypeScript misidentifies 'postgres_changes' as 'broadcast'
     .on(
       'postgres_changes',
       {
@@ -61,7 +61,7 @@ export const setupRealtimeSubscriptions = () => {
 
   const transferSubscription = supabase
     .channel('transfer-changes')
-    // @ts-ignore: Force TypeScript to accept 'postgres_changes'
+    // @ts-expect-error: TypeScript misidentifies 'postgres_changes' as 'broadcast'
     .on(
       'postgres_changes',
       {
@@ -91,7 +91,7 @@ export const setupRealtimeSubscriptions = () => {
 
   const merchantSubscription = supabase
     .channel('merchant-changes')
-    // @ts-ignore: Force TypeScript to accept 'postgres_changes'
+    // @ts-expect-error: TypeScript misidentifies 'postgres_changes' as 'broadcast'
     .on(
       'postgres_changes',
       {
@@ -122,7 +122,7 @@ export const subscribeToTransactions = (merchantId?: string) => {
   const filter = merchantId ? { filter: `merchant_id=eq.${merchantId}` } : {};
   return supabase
     .channel('transaction-updates')
-    // @ts-ignore: Force TypeScript to accept 'postgres_changes'
+    // @ts-expect-error: TypeScript misidentifies 'postgres_changes' as 'broadcast'
     .on(
       'postgres_changes',
       {
@@ -143,7 +143,7 @@ export const subscribeToTransfers = (merchantId?: string) => {
   const filter = merchantId ? { filter: `merchant_id=eq.${merchantId}` } : {};
   return supabase
     .channel('transfer-updates')
-    // @ts-ignore: Force TypeScript to accept 'postgres_changes'
+    // @ts-expect-error: TypeScript misidentifies 'postgres_changes' as 'broadcast'
     .on(
       'postgres_changes',
       {
@@ -163,7 +163,7 @@ export const subscribeToTransfers = (merchantId?: string) => {
 export const subscribeToMerchantKYC = (merchantId: string) => {
   return supabase
     .channel('kyc-updates')
-    // @ts-ignore: Force TypeScript to accept 'postgres_changes'
+    // @ts-expect-error: TypeScript misidentifies 'postgres_changes' as 'broadcast'
     .on(
       'postgres_changes',
       {
