@@ -1,4 +1,5 @@
 import { sql } from '@vercel/postgres';
+
 import { config } from '@/config';
 
 if (!config.databaseUrl) {
@@ -9,7 +10,7 @@ export { sql };
 
 export async function queryWithErrorHandling<T>(
   query: string,
-  values: any[] = []
+  values: unknown[] = []
 ): Promise<T> {
   try {
     const result = await sql.query(query, values);

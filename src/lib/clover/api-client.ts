@@ -4,11 +4,6 @@ import { cookies } from 'next/headers';
 
 const CLOVER_API_BASE_URL = `${process.env.CLOVER_API_BASE_URL}/v3`;
 
-interface CloverAPIError extends Error {
-  status?: number;
-  code?: string;
-}
-
 interface CloverEmployee {
   id: string;
   name: string;
