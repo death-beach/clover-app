@@ -1,8 +1,6 @@
 import type { RealtimePostgresChangesPayload, RealtimeChannel } from '@supabase/supabase-js';
-
 import { supabase } from '../supabase';
 
-// Define specific types for each table
 interface Transaction {
   transaction_id: string;
   status: string;
@@ -28,7 +26,7 @@ type TransferChanges = RealtimePostgresChangesPayload<Transfer> & { new: Transfe
 type MerchantChanges = RealtimePostgresChangesPayload<Merchant> & { new: Merchant; old?: Merchant };
 
 export const setupRealtimeSubscriptions = () => {
-  const transactionSubscription = supabase
+  const transactionSubscription = (supabase
     .channel('transaction-changes')
     .on(
       'postgres_changes' as const,
@@ -54,8 +52,7 @@ export const setupRealtimeSubscriptions = () => {
             break;
         }
       }
-    )
-    .subscribe();
+    ) as unknown as RealtimeChannel).subscribe();
 
   const transferSubscription = supabase
     .channel('transfer-changes')
