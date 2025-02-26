@@ -24,9 +24,9 @@ interface Merchant {
   [key: string]: unknown;
 }
 
-type TransactionChanges = RealtimePostgresChangesPayload<Transaction> & { new: Transaction; old?: Transaction };
-type TransferChanges = RealtimePostgresChangesPayload<Transfer> & { new: Transfer; old?: Transfer };
-type MerchantChanges = RealtimePostgresChangesPayload<Merchant> & { new: Merchant; old?: Merchant };
+type TransactionChanges = RealtimePostgresChangesPayload<Transaction & Record<string, unknown>> & { new: Transaction; old?: Transaction };
+type TransferChanges = RealtimePostgresChangesPayload<Transfer & Record<string, unknown>> & { new: Transfer; old?: Transfer };
+type MerchantChanges = RealtimePostgresChangesPayload<Merchant & Record<string, unknown>> & { new: Merchant; old?: Merchant };
 
 export const setupRealtimeSubscriptions = () => {
   const transactionSubscription = supabase
