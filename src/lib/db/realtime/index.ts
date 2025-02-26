@@ -31,7 +31,7 @@ export const setupRealtimeSubscriptions = () => {
   const transactionSubscription = supabase
     .channel('transaction-changes')
     .on(
-      'postgres_changes',
+      'postgres_changes' as const,
       {
         event: '*',
         schema: 'public',
@@ -60,7 +60,7 @@ export const setupRealtimeSubscriptions = () => {
   const transferSubscription = supabase
     .channel('transfer-changes')
     .on(
-      'postgres_changes',
+      'postgres_changes' as const,
       {
         event: '*',
         schema: 'public',
@@ -89,7 +89,7 @@ export const setupRealtimeSubscriptions = () => {
   const merchantSubscription = supabase
     .channel('merchant-changes')
     .on(
-      'postgres_changes',
+      'postgres_changes' as const,
       {
         event: 'UPDATE',
         schema: 'public',
@@ -119,7 +119,7 @@ export const subscribeToTransactions = (merchantId?: string) => {
   return supabase
     .channel('transaction-updates')
     .on(
-      'postgres_changes',
+      'postgres_changes' as const,
       {
         event: '*',
         schema: 'public',
@@ -139,7 +139,7 @@ export const subscribeToTransfers = (merchantId?: string) => {
   return supabase
     .channel('transfer-updates')
     .on(
-      'postgres_changes',
+      'postgres_changes' as const,
       {
         event: '*',
         schema: 'public',
@@ -158,7 +158,7 @@ export const subscribeToMerchantKYC = (merchantId: string) => {
   return supabase
     .channel('kyc-updates')
     .on(
-      'postgres_changes',
+      'postgres_changes' as const,
       {
         event: 'UPDATE',
         schema: 'public',
