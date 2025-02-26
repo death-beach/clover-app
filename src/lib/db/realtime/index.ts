@@ -31,8 +31,7 @@ type MerchantChanges = RealtimePostgresChangesPayload<Merchant & Record<string, 
 export const setupRealtimeSubscriptions = () => {
   const transactionSubscription = supabase
     .channel('transaction-changes')
-    // @ts-expect-error: TypeScript misidentifies 'postgres_changes' as 'broadcast'
-    .on(
+    .on<Transaction>(
       'postgres_changes',
       {
         event: '*',
@@ -61,8 +60,7 @@ export const setupRealtimeSubscriptions = () => {
 
   const transferSubscription = supabase
     .channel('transfer-changes')
-    // @ts-expect-error: TypeScript misidentifies 'postgres_changes' as 'broadcast'
-    .on(
+    .on<Transfer>(
       'postgres_changes',
       {
         event: '*',
@@ -91,8 +89,7 @@ export const setupRealtimeSubscriptions = () => {
 
   const merchantSubscription = supabase
     .channel('merchant-changes')
-    // @ts-expect-error: TypeScript misidentifies 'postgres_changes' as 'broadcast'
-    .on(
+    .on<Merchant>(
       'postgres_changes',
       {
         event: 'UPDATE',
@@ -122,8 +119,7 @@ export const subscribeToTransactions = (merchantId?: string) => {
   const filter = merchantId ? { filter: `merchant_id=eq.${merchantId}` } : {};
   return supabase
     .channel('transaction-updates')
-    // @ts-expect-error: TypeScript misidentifies 'postgres_changes' as 'broadcast'
-    .on(
+    .on<Transaction>(
       'postgres_changes',
       {
         event: '*',
@@ -143,8 +139,7 @@ export const subscribeToTransfers = (merchantId?: string) => {
   const filter = merchantId ? { filter: `merchant_id=eq.${merchantId}` } : {};
   return supabase
     .channel('transfer-updates')
-    // @ts-expect-error: TypeScript misidentifies 'postgres_changes' as 'broadcast'
-    .on(
+    .on<Transfer>(
       'postgres_changes',
       {
         event: '*',
@@ -163,8 +158,7 @@ export const subscribeToTransfers = (merchantId?: string) => {
 export const subscribeToMerchantKYC = (merchantId: string) => {
   return supabase
     .channel('kyc-updates')
-    // @ts-expect-error: TypeScript misidentifies 'postgres_changes' as 'broadcast'
-    .on(
+    .on<Merchant>(
       'postgres_changes',
       {
         event: 'UPDATE',
