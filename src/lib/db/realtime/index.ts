@@ -1,4 +1,4 @@
-import type { RealtimePostgresChangesPayload, RealtimeChannel } from '@supabase/supabase-js';
+import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { supabase } from '../supabase';
 
 interface Transaction {
@@ -26,10 +26,10 @@ type TransferChanges = RealtimePostgresChangesPayload<Transfer> & { new: Transfe
 type MerchantChanges = RealtimePostgresChangesPayload<Merchant> & { new: Merchant; old?: Merchant };
 
 export const setupRealtimeSubscriptions = () => {
-  const transactionSubscription = (supabase
+  const transactionSubscription = supabase
     .channel('transaction-changes')
     .on(
-      'postgres_changes' as const,
+      'postgres_changes',
       {
         event: '*',
         schema: 'public',
@@ -52,12 +52,13 @@ export const setupRealtimeSubscriptions = () => {
             break;
         }
       }
-    ) as unknown as RealtimeChannel).subscribe();
+    )
+    .subscribe();
 
   const transferSubscription = supabase
     .channel('transfer-changes')
     .on(
-      'postgres_changes' as const,
+      'postgres_changes',
       {
         event: '*',
         schema: 'public',
@@ -86,7 +87,7 @@ export const setupRealtimeSubscriptions = () => {
   const merchantSubscription = supabase
     .channel('merchant-changes')
     .on(
-      'postgres_changes' as const,
+      'postgres_changes',
       {
         event: 'UPDATE',
         schema: 'public',
@@ -116,7 +117,7 @@ export const subscribeToTransactions = (merchantId?: string) => {
   return supabase
     .channel('transaction-updates')
     .on(
-      'postgres_changes' as const,
+      'postgres_changes',
       {
         event: '*',
         schema: 'public',
@@ -136,7 +137,7 @@ export const subscribeToTransfers = (merchantId?: string) => {
   return supabase
     .channel('transfer-updates')
     .on(
-      'postgres_changes' as const,
+      'postgres_changes',
       {
         event: '*',
         schema: 'public',
@@ -155,7 +156,7 @@ export const subscribeToMerchantKYC = (merchantId: string) => {
   return supabase
     .channel('kyc-updates')
     .on(
-      'postgres_changes' as const,
+      'postgres_changes',
       {
         event: 'UPDATE',
         schema: 'public',
