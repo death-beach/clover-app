@@ -6,7 +6,7 @@ export interface EnrichedTransaction {
   tokenTransfers: TokenTransfer[];
   nativeTransfers: NativeTransfer[];
   accountData: AccountData[];
-  events: any[];
+  events: Record<string, unknown>[];
 }
 
 export interface TokenTransfer {
