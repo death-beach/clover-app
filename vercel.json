@@ -1,6 +1,7 @@
 {
-    "build": {
-      "command": "npm install --legacy-peer-deps && npm run build"
+  "build": {
+    "env": {
+      "NODE_OPTIONS": "--legacy-peer-deps"
     }
   }
-  
+}

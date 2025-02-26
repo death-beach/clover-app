@@ -14,7 +14,7 @@
     "test:ci": "vitest run --coverage --reporter=json --outputFile=./coverage/test-results.json"
   },
   "dependencies": {
-    "@privy-io/react-auth": "^1.73.0",
+    "@privy-io/react-auth": "1.73.0",
     "@solana/pay": "^0.2.5",
     "@solana/web3.js": "^1.95.2",
     "@supabase/supabase-js": "2.45.0",
@@ -47,6 +47,7 @@
     "node": ">=18.17.0"
   },
   "resolutions": {
-    "typescript": "5.3.3"
+    "typescript": "5.3.3",
+    "viem": "2.19.4"
   }
 }
