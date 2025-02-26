@@ -1,34 +1,31 @@
-'use client';
-
+// builtin
 import { useEffect } from 'react';
-import { createClient, RealtimeChannel } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+// external
+import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
-export const useRealtimeSubscription = <T>(
-  channel: string,
+// internal
+import { supabase } from '@/lib/db/supabase';
+
+type Callback<T> = (payload: RealtimePostgresChangesPayload<T>) => void;
+
+export function useRealtimeSubscription<T>(
+  channelName: string,
   table: string,
-  callback?: (payload: T) => void
-) => {
+  callback: Callback<T>,
+) {
   useEffect(() => {
-    if (!callback) return;
-
-    const subscription: RealtimeChannel = supabase
-      .channel(channel)
+    const subscription = supabase
+      .channel(channelName)
       .on(
-        'postgres_changes' as any, // Bypass TS check
+        'postgres_changes',
         { event: '*', schema: 'public', table },
-        callback
+        callback,
       )
       .subscribe();
 
     return () => {
       supabase.removeChannel(subscription);
     };
-  }, [channel, table, callback]);
-
-  return null;
-};
+  }, [channelName, table, callback]);
+}

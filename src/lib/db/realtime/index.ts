@@ -1,4 +1,7 @@
+// builtin
 import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+
+// internal
 import { supabase } from '../supabase';
 
 interface Transaction {
@@ -51,7 +54,7 @@ export const setupRealtimeSubscriptions = () => {
             }
             break;
         }
-      }
+      },
     )
     .subscribe();
 
@@ -80,7 +83,7 @@ export const setupRealtimeSubscriptions = () => {
             }
             break;
         }
-      }
+      },
     )
     .subscribe();
 
@@ -101,7 +104,7 @@ export const setupRealtimeSubscriptions = () => {
           oldStatus: oldRecord.kyc_status,
           newStatus: newRecord.kyc_status,
         });
-      }
+      },
     )
     .subscribe();
 
@@ -127,7 +130,7 @@ export const subscribeToTransactions = (merchantId?: string) => {
       (payload: TransactionChanges) => {
         const { new: newRecord, eventType } = payload;
         return { type: eventType, data: newRecord };
-      }
+      },
     )
     .subscribe();
 };
@@ -147,7 +150,7 @@ export const subscribeToTransfers = (merchantId?: string) => {
       (payload: TransferChanges) => {
         const { new: newRecord, eventType } = payload;
         return { type: eventType, data: newRecord };
-      }
+      },
     )
     .subscribe();
 };
@@ -166,7 +169,7 @@ export const subscribeToMerchantKYC = (merchantId: string) => {
       (payload: MerchantChanges) => {
         const { new: newRecord, eventType } = payload;
         return { type: eventType, data: newRecord };
-      }
+      },
     )
     .subscribe();
 };
