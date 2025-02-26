@@ -1,5 +1,6 @@
-import { supabase } from './supabase';
 import type { Database } from '@/types/supabase';
+
+import { supabase } from './supabase';
 
 type Transaction = Database['public']['Tables']['transactions']['Row'];
 type TransactionInsert = Database['public']['Tables']['transactions']['Insert'];

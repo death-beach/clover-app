@@ -3,7 +3,7 @@ import { Connection } from '@solana/web3.js';
 import { BlockchainCache } from '@/lib/blockchain/cache';
 import { RateLimiter } from '@/lib/blockchain/rateLimiter';
 import { withRetry } from '@/lib/blockchain/retry';
-import { HeliusConfig } from '@/lib/helius/config';
+import type { HeliusConfig } from '@/lib/helius/config';
 import { logger } from '@/lib/logger';
 
 export class HeliusClient {

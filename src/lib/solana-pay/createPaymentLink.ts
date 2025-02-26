@@ -1,8 +1,8 @@
 import { createQR, encodeURL } from '@solana/pay';
 import type { Connection } from '@solana/web3.js';
 import { PublicKey } from '@solana/web3.js';
-
 import BigNumber from 'bignumber.js';
+
 import { SOLANA_PAY_CONFIG } from '../../config/solana-pay.config';
 
 interface CreatePaymentLinkParams {
