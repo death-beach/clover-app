@@ -1,45 +1,36 @@
-// builtin
-import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+"use client";
 
-// internal
+import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { supabase } from '../supabase';
 
-interface Transaction {
+type TransactionChanges = RealtimePostgresChangesPayload<{
   transaction_id: string;
   status: string;
   merchant_id: string;
   [key: string]: unknown;
-}
+}>;
 
-interface Transfer {
+type TransferChanges = RealtimePostgresChangesPayload<{
   transfer_id: string;
   status: string;
   merchant_id: string;
   [key: string]: unknown;
-}
+}>;
 
-interface Merchant {
+type MerchantChanges = RealtimePostgresChangesPayload<{
   merchant_id: string;
   kyc_status: string;
   [key: string]: unknown;
-}
-
-type TransactionChanges = RealtimePostgresChangesPayload<Transaction & Record<string, unknown>> & { new: Transaction; old?: Transaction };
-type TransferChanges = RealtimePostgresChangesPayload<Transfer & Record<string, unknown>> & { new: Transfer; old?: Transfer };
-type MerchantChanges = RealtimePostgresChangesPayload<Merchant & Record<string, unknown>> & { new: Merchant; old?: Merchant };
+}>;
 
 export const setupRealtimeSubscriptions = () => {
   const transactionSubscription = supabase
     .channel('transaction-changes')
-    .on<Transaction>(
+    .on(
       'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'transactions',
-      },
+      { event: '*', schema: 'public', table: 'transactions' },
       (payload: TransactionChanges) => {
-        const { new: newRecord, old: oldRecord, eventType } = payload;
+        const { eventType, new: newRecord, old: oldRecord } = payload;
         switch (eventType) {
           case 'INSERT':
             console.log('New transaction:', newRecord);
@@ -60,15 +51,11 @@ export const setupRealtimeSubscriptions = () => {
 
   const transferSubscription = supabase
     .channel('transfer-changes')
-    .on<Transfer>(
+    .on(
       'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'transfers',
-      },
+      { event: '*', schema: 'public', table: 'transfers' },
       (payload: TransferChanges) => {
-        const { new: newRecord, old: oldRecord, eventType } = payload;
+        const { eventType, new: newRecord, old: oldRecord } = payload;
         switch (eventType) {
           case 'INSERT':
             console.log('New transfer initiated:', newRecord);
@@ -89,21 +76,20 @@ export const setupRealtimeSubscriptions = () => {
 
   const merchantSubscription = supabase
     .channel('merchant-changes')
-    .on<Merchant>(
+    .on(
       'postgres_changes',
-      {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'merchants',
-        filter: 'kyc_status=neq.previous:kyc_status',
-      },
+      { event: 'UPDATE', schema: 'public', table: 'merchants', filter: 'kyc_status=neq.previous:kyc_status' },
       (payload: MerchantChanges) => {
-        const { new: newRecord, old: oldRecord } = payload;
-        console.log('Merchant KYC status changed:', {
-          id: newRecord.merchant_id,
-          oldStatus: oldRecord.kyc_status,
-          newStatus: newRecord.kyc_status,
-        });
+        const { eventType, new: newRecord, old: oldRecord } = payload;
+        switch (eventType) {
+          case 'UPDATE':
+            console.log('Merchant KYC status changed:', {
+              id: newRecord.merchant_id,
+              oldStatus: oldRecord.kyc_status,
+              newStatus: newRecord.kyc_status,
+            });
+            break;
+        }
       },
     )
     .subscribe();
@@ -119,16 +105,11 @@ export const subscribeToTransactions = (merchantId?: string) => {
   const filter = merchantId ? { filter: `merchant_id=eq.${merchantId}` } : {};
   return supabase
     .channel('transaction-updates')
-    .on<Transaction>(
+    .on(
       'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'transactions',
-        ...filter,
-      },
+      { event: '*', schema: 'public', table: 'transactions', ...filter },
       (payload: TransactionChanges) => {
-        const { new: newRecord, eventType } = payload;
+        const { eventType, new: newRecord } = payload;
         return { type: eventType, data: newRecord };
       },
     )
@@ -139,16 +120,11 @@ export const subscribeToTransfers = (merchantId?: string) => {
   const filter = merchantId ? { filter: `merchant_id=eq.${merchantId}` } : {};
   return supabase
     .channel('transfer-updates')
-    .on<Transfer>(
+    .on(
       'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'transfers',
-        ...filter,
-      },
+      { event: '*', schema: 'public', table: 'transfers', ...filter },
       (payload: TransferChanges) => {
-        const { new: newRecord, eventType } = payload;
+        const { eventType, new: newRecord } = payload;
         return { type: eventType, data: newRecord };
       },
     )
@@ -158,16 +134,11 @@ export const subscribeToTransfers = (merchantId?: string) => {
 export const subscribeToMerchantKYC = (merchantId: string) => {
   return supabase
     .channel('kyc-updates')
-    .on<Merchant>(
+    .on(
       'postgres_changes',
-      {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'merchants',
-        filter: `merchant_id=eq.${merchantId}`,
-      },
+      { event: 'UPDATE', schema: 'public', table: 'merchants', filter: `merchant_id=eq.${merchantId}` },
       (payload: MerchantChanges) => {
-        const { new: newRecord, eventType } = payload;
+        const { eventType, new: newRecord } = payload;
         return { type: eventType, data: newRecord };
       },
     )
