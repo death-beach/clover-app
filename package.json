@@ -15,9 +15,9 @@
   },
   "dependencies": {
     "@headlessui/react": "2.1.10",
-    "@privy-io/react-auth": "1.73.0",
+    "@privy-io/react-auth": "^1.80.0",
     "@solana/pay": "^0.2.5",
-    "@solana/web3.js": "^1.95.2",
+    "@solana/web3.js": "1.95.2",
     "@solana/wallet-adapter-react": "^0.15.35",
     "@solana/wallet-adapter-wallets": "^0.19.32",
     "@supabase/supabase-js": "2.45.0",
