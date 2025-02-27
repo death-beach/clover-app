@@ -4,17 +4,16 @@
 import { useEffect } from 'react';
 
 // external
-import { LoginComponent, useLogin, usePrivy } from '@privy-io/react-auth';
+import { useLogin, usePrivy } from '@privy-io/react-auth';
 
 // internal
-import { useAuth } from '@/lib/auth';
-import { PhantomConnect } from '@/components/PhantomConnect';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function HomePage() {
   const { user } = usePrivy();
   const { login } = useLogin({
     onComplete: () => {},
-    onError: () => {},
+    onError: (error) => console.error('Login error:', error),
   });
   const { logout } = useAuth();
 
@@ -36,10 +35,15 @@ export default function HomePage() {
           Log Out
         </button>
       ) : (
-        <>
-          <LoginComponent />
-          <PhantomConnect />
-        </>
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-4">Welcome to Clover App</h1>
+          <button
+            className="rounded-full bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            onClick={login}
+          >
+            Login
+          </button>
+        </div>
       )}
     </main>
   );
