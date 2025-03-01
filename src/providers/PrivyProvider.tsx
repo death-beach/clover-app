@@ -4,12 +4,10 @@
 import { useCallback } from 'react';
 
 // external
-import { PrivyProvider as BasePrivyProvider } from '@privy-io/react-auth';
-import { toSolanaWalletConnectors } from '@privy-io/react-auth/solana'; // Test this
-import type { User } from '@privy-io/react-auth';
-
-// internal
 import { useRouter } from 'next/navigation';
+import { PrivyProvider as BasePrivyProvider } from '@privy-io/react-auth';
+import type { User } from '@privy-io/react-auth';
+import { toSolanaWalletConnectors } from '@privy-io/react-auth/solana';
 
 const solanaConnectors = toSolanaWalletConnectors({
   shouldAutoConnect: true,
