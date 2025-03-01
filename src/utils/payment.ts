@@ -32,7 +32,7 @@ export async function createPaymentIntent({
 
     if (error) throw error;
 
-    return { paymentIntentId: data.transaction_id, url };
+    return { paymentIntentId: data.id, url };
   } catch (error) {
     console.error('Error creating payment intent:', error);
     throw error;
@@ -45,7 +45,7 @@ export async function getPaymentIntent(paymentIntentId: string) {
     const { data, error } = await supabase
       .from('transactions')
       .select('*')
-      .eq('transaction_id', paymentIntentId)
+      .eq('id', paymentIntentId)
       .single();
 
     if (error) throw error;
