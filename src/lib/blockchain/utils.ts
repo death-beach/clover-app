@@ -1,7 +1,10 @@
-import { Connection, PublicKey, ParsedTransactionWithMeta } from '@solana/web3.js';
-import { withRetry } from '@/lib/blockchain/retry';
+// external
+import { Connection, ParsedTransactionWithMeta, PublicKey } from '@solana/web3.js';
+
+// internal
 import { BlockchainCache } from '@/lib/blockchain/cache';
 import { RateLimiter } from '@/lib/blockchain/rateLimiter';
+import { withRetry } from '@/lib/blockchain/retry';
 import { logger } from '@/lib/logger';
 
 interface TokenAccount {

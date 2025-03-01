@@ -1,6 +1,9 @@
 "use client";
 
+// external
 import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+
+// internal
 import { supabase } from '../supabase';
 
 type TransactionChanges = RealtimePostgresChangesPayload<{
