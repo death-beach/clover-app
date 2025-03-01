@@ -23,7 +23,7 @@ export async function createPaymentIntent({
       .from('transactions')
       .insert({
         merchant_id: merchantId,
-        amount_usdc: amount,
+        amount: amount,
         status: 'pending',
         solana_reference: reference,
       })
