@@ -1,4 +1,5 @@
 import { useState } from 'react'
+
 import { Card } from '@/components/ui/Card'
 import type { Merchant } from '@/types/merchants'
 

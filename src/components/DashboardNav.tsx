@@ -1,4 +1,5 @@
 import { usePrivy } from '@privy-io/react-auth';
+
 import Link from 'next/link';
 
 import { CLOVER_ROLES } from '@/config/clover-roles';

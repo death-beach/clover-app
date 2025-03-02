@@ -1,7 +1,8 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { WebhookPayload, TokenTransfer } from '@/lib/helius/types';
-import { USDC_MINT } from '@/config/tokens';
 import { createClient } from '@supabase/supabase-js';
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+import { USDC_MINT } from '@/config/tokens';
+import type { WebhookPayload, TokenTransfer } from '@/lib/helius/types';
 
 export async function POST(req: NextApiRequest, res: NextApiResponse) {
   try {

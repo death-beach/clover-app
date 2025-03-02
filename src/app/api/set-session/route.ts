@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { PublicKey } from '@solana/web3.js';
+
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 function isValidSolanaAddress(address: string): boolean {
   try {

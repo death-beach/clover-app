@@ -1,7 +1,9 @@
-import { NextResponse } from 'next/server';
-import { CloverOAuthService } from '@/lib/clover/oauth-service';
-import { cookies } from 'next/headers';
 import { randomBytes } from 'crypto';
+
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
+
+import { CloverOAuthService } from '@/lib/clover/oauth-service';
 
 export async function GET() {
   const state = randomBytes(32).toString('hex');

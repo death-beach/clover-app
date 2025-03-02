@@ -1,11 +1,15 @@
 'use client';
 
-import { usePrivy } from '@privy-io/react-auth';
-import { useRouter } from 'next/navigation';
-import { PRIVY_CONFIG } from '@/config/privy';
-import { useCloverAuth } from './useCloverAuth';
 import { useState, useEffect } from 'react';
+
+import { usePrivy } from '@privy-io/react-auth';
+
+import { useRouter } from 'next/navigation';
+
 import { CLOVER_ROLES, type CloverRole } from '@/config/clover-roles';
+import { PRIVY_CONFIG } from '@/config/privy';
+
+import { useCloverAuth } from './useCloverAuth';
 
 export type AuthSource = 'privy' | 'clover' | null;
 

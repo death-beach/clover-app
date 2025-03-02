@@ -1,7 +1,7 @@
-import { PrivyProvider } from '@/providers/PrivyProvider';
-import { CloverSessionProvider } from '@/providers/CloverSessionProvider';
 import { ApiProvider } from '@/contexts/api/ApiContext';
 import { AuthProvider } from '@/contexts/auth/AuthContext'; // Add this
+import { CloverSessionProvider } from '@/providers/CloverSessionProvider';
+import { PrivyProvider } from '@/providers/PrivyProvider';
 
 export const metadata = {
   title: 'USDC Payment Gateway',

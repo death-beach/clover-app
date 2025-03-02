@@ -1,5 +1,6 @@
 // external
-import { Connection, ParsedTransactionWithMeta, PublicKey } from '@solana/web3.js';
+import type { Connection, ParsedTransactionWithMeta} from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 
 // internal
 import { BlockchainCache } from '@/lib/blockchain/cache';

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+
 import { CLOVER_ROLES, type CloverRole, CLOVER_ROLE_PERMISSIONS } from '@/config/clover-roles';
 
 interface User {

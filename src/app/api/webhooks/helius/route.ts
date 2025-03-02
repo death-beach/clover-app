@@ -1,7 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@vercel/postgres';
+
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
+
+
 import { config } from '@/config';
-import { WebhookPayload, TokenTransfer } from '@/lib/helius/types';
+import type { WebhookPayload, TokenTransfer } from '@/lib/helius/types';
 
 export async function POST(req: NextRequest) {
   try {

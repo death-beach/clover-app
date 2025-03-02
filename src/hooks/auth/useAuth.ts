@@ -1,7 +1,8 @@
 import { useCallback } from 'react'
+
 import { useAuthContext } from '@/contexts/auth/AuthContext'
-import type { User } from '@/types/auth'
 import type { LoginCredentials } from '@/contexts/auth/types'
+import type { User } from '@/types/auth'
 
 export const useAuth = () => {
   const context = useAuthContext()

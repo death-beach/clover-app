@@ -1,6 +1,9 @@
-import { NextResponse, NextRequest } from 'next/server';
-import { cookies } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
+
+import { cookies } from 'next/headers';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+
 
 export async function GET(request: NextRequest) {
   try {

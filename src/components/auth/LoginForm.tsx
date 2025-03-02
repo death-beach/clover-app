@@ -1,6 +1,8 @@
-import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+
+import { useRouter } from 'next/navigation';
+
+import { useAuth } from '@/hooks/useAuth';
 
 const LoginForm = () => {
   const { login, isAuthenticated, isLoading } = useAuth();

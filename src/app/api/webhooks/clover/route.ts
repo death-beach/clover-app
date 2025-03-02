@@ -1,5 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
+
+
 import { validateWebhookSignature } from './utils';
 
 export async function POST(request: NextRequest) {

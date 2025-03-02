@@ -1,4 +1,4 @@
-  import { NextAuthOptions } from 'next-auth';
+  import type { NextAuthOptions } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 
 const CLOVER_API_KEY = process.env.CLOVER_API_KEY!;
